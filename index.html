@@ -3,66 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jentzen SKY | 帮你 'Goreng' 出好业绩的 Marketing 大厨</title>
-    <meta name="description" content="做 Marketing 不只要 Volume，最重要是有 Sales！8年实战经验，Jentzen SKY 帮你把 Viewer 变成 Customer。">
-
-    <!-- Tailwind CSS -->
+    <title>Jentzen SKY | Marketing 大厨</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700;900&display=swap" rel="stylesheet">
 
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
-
-    <!-- Tailwind Config -->
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: {
-                        sans: ['"Noto Sans SC"', 'sans-serif'],
-                    },
-                    colors: {
-                        brandOrange: '#FF6600',
-                        brandYellow: '#FFCC00',
-                        cyberDark: '#0a0a0a',
-                        cyberGray: '#1e1e1e',
-                        neonBlue: '#00F0FF',
-                    },
-                    boxShadow: {
-                        'glow-orange': '0 0 15px #FF6600, 0 0 30px #FF660044',
-                        'glow-yellow': '0 0 15px #FFCC00, 0 0 30px #FFCC0044',
-                    },
-                    animation: {
-                        'bounce-slow': 'bounce 3s infinite',
-                        'float': 'float 6s ease-in-out infinite',
-                        'float-delayed': 'float 6s ease-in-out 3s infinite',
-                        'shake': 'shake 0.5s cubic-bezier(.36,.07,.19,.97) both',
-                        'pulse-glow': 'pulseGlow 2s infinite',
-                        'fade-in': 'fadeIn 0.3s ease-out',
-                        'slide-in': 'slideIn 0.3s ease-out',
-                    },
+                    fontFamily: { sans: ['"Noto Sans SC"', 'sans-serif'] },
+                    colors: { brandOrange: '#FF6600', brandYellow: '#FFCC00', cyberDark: '#0a0a0a' },
+                    animation: { 'bounce-slow': 'bounce 3s infinite', 'float': 'float 6s ease-in-out infinite' },
                     keyframes: {
-                        float: {
-                            '0%, 100%': { transform: 'translateY(0)' },
-                            '50%': { transform: 'translateY(-20px)' },
-                        },
-                        shake: {
-                            '10%, 90%': { transform: 'translate3d(-1px, 0, 0)' },
-                            '20%, 80%': { transform: 'translate3d(2px, 0, 0)' },
-                            '30%, 50%, 70%': { transform: 'translate3d(-4px, 0, 0)' },
-                            '40%, 60%': { transform: 'translate3d(4px, 0, 0)' }
-                        },
-                        pulseGlow: {
-                            '0%, 100%': { opacity: '1', boxShadow: '0 0 20px #FF660044' },
-                            '50%': { opacity: '.8', boxShadow: '0 0 40px #FF660088' },
-                        },
-                        fadeIn: {
-                            '0%': { opacity: '0' },
-                            '100%': { opacity: '1' }
-                        },
-                        slideIn: {
-                            '0%': { transform: 'translateX(100%)' },
-                            '100%': { transform: 'translateX(0)' }
-                        }
+                        float: { '0%, 100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-20px)' } }
                     }
                 }
             }
@@ -70,51 +25,73 @@
     </script>
 
     <style>
-        body {
-            background-color: #0a0a0a;
-            color: #ffffff;
-            scroll-behavior: smooth;
-        }
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #1e1e1e;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #555;
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #FF6600;
-        }
-        
-        /* Glassmorphism Utilities */
-        .glass {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        .scrollbar-hide::-webkit-scrollbar { display: none; }
-        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+        body { background-color: #0a0a0a; color: #ffffff; scroll-behavior: smooth; }
+        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
     </style>
-<script type="importmap">
-{
-  "imports": {
-    "react": "https://esm.sh/react@^19.2.3",
-    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
-    "react/": "https://esm.sh/react@^19.2.3/",
-    "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@^2.90.1",
-    "lucide-react": "https://esm.sh/lucide-react@^0.562.0"
-  }
-}
-</script>
-<link rel="stylesheet" href="/index.css">
 </head>
-<body class="bg-cyberDark min-h-screen text-white font-sans selection:bg-brandOrange selection:text-white">
-    <div id="root"></div>
-    <script type="module" src="/index.tsx"></script>
+<body class="bg-cyberDark min-h-screen">
+
+    <nav class="fixed w-full z-50 bg-black/50 backdrop-blur-md border-b border-white/10">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <div class="w-10 h-10 bg-brandOrange rounded-full flex items-center justify-center">
+                    <i data-lucide="chef-hat" class="text-black w-6 h-6"></i>
+                </div>
+                <span class="font-black text-2xl tracking-tighter">JENTZEN <span class="text-brandOrange">SKY</span></span>
+            </div>
+            <button onclick="window.location.href='#contact'" class="bg-brandOrange px-6 py-2 rounded-full font-bold text-sm">PM 聊聊</button>
+        </div>
+    </nav>
+
+    <section class="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-b from-brandOrange/10 to-transparent"></div>
+        <div class="relative z-10 text-center px-4">
+            <div class="inline-block px-4 py-1 rounded-full border border-brandOrange text-brandOrange text-sm font-bold mb-6 animate-bounce-slow">
+                🔥 8年实战经验 • NO BULLSHIT
+            </div>
+            <h1 class="text-5xl md:text-7xl font-black mb-6 leading-tight">
+                Marketing 就像炒菜<br>
+                <span class="text-brandOrange">火候不对，再好的料都浪费！</span>
+            </h1>
+            <p class="text-xl text-gray-400 max-w-2xl mx-auto mb-10">
+                老板，别再烧钱做无效广告了！引流是放大器，产品是核心。让我帮你炒出一盘让全城排队的爆款好菜。
+            </p>
+            <div class="flex flex-wrap justify-center gap-4">
+                <a href="#portfolio" class="bg-brandOrange text-white px-8 py-4 rounded-xl font-black text-lg hover:scale-105 transition-transform">看我的战绩</a>
+                <a href="https://wa.me/60126539881" class="bg-white/10 border border-white/20 px-8 py-4 rounded-xl font-bold text-lg hover:bg-white/20">联系大厨</a>
+            </div>
+        </div>
+    </section>
+
+    <section id="portfolio" class="py-20 bg-black/50">
+        <div class="max-w-7xl mx-auto px-6 text-center">
+            <h2 class="text-3xl font-black mb-12">我的大厨 <span class="text-brandOrange">招牌菜</span></h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="glass p-6 rounded-2xl text-left">
+                    <div class="text-brandYellow font-black text-4xl mb-2">120%</div>
+                    <div class="text-white font-bold mb-2">平均业绩 Up</div>
+                    <p class="text-gray-400 text-sm">通过精准投放与内容营销，让生意额实现翻倍增长。</p>
+                </div>
+                <div class="glass p-6 rounded-2xl text-left">
+                    <div class="text-brandOrange font-black text-4xl mb-2">63K+</div>
+                    <div class="text-white font-bold mb-2">独家 KOC 流量</div>
+                    <p class="text-gray-400 text-sm">旗下“好食光”平台，直接带客到店，无需等待。</p>
+                </div>
+                <div class="glass p-6 rounded-2xl text-left">
+                    <div class="text-brandYellow font-black text-4xl mb-2">8 Years</div>
+                    <div class="text-white font-bold mb-2">实战沉淀</div>
+                    <p class="text-gray-400 text-sm">横跨 F&B、装修、服务业，懂生意逻辑，不只是懂 Ads。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer id="contact" class="py-10 text-center border-t border-white/10">
+        <p class="text-gray-500">© 2024 Jentzen SKY. All Rights Reserved.</p>
+    </footer>
+
+    <script>
+        lucide.createIcons();
+    </script>
 </body>
 </html>
