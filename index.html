@@ -3,22 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jentzen SKY | Marketing 大厨</title>
+    <title>Jentzen SKY | 帮你 'Goreng' 出好业绩的 Marketing 大厨</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700;900&display=swap" rel="stylesheet">
 
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     fontFamily: { sans: ['"Noto Sans SC"', 'sans-serif'] },
-                    colors: { brandOrange: '#FF6600', brandYellow: '#FFCC00', cyberDark: '#0a0a0a' },
-                    animation: { 'bounce-slow': 'bounce 3s infinite', 'float': 'float 6s ease-in-out infinite' },
-                    keyframes: {
-                        float: { '0%, 100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-20px)' } }
-                    }
+                    colors: { brandOrange: '#FF6600', brandYellow: '#FFCC00', cyberDark: '#0a0a0a', cyberGray: '#1e1e1e' },
+                    boxShadow: { 'glow-orange': '0 0 15px #FF6600, 0 0 30px #FF660044' },
+                    animation: { 'bounce-slow': 'bounce 3s infinite', 'float': 'float 6s ease-in-out infinite' }
                 }
             }
         }
@@ -29,65 +27,79 @@
         .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
     </style>
 </head>
-<body class="bg-cyberDark min-h-screen">
+<body class="bg-cyberDark min-h-screen text-white font-sans">
 
-    <nav class="fixed w-full z-50 bg-black/50 backdrop-blur-md border-b border-white/10">
-        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+    <nav class="fixed w-full z-50 bg-black/80 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-4 h-20 flex items-center justify-between">
             <div class="flex items-center gap-2">
-                <div class="w-10 h-10 bg-brandOrange rounded-full flex items-center justify-center">
+                <div class="w-10 h-10 bg-brandOrange rounded-full flex items-center justify-center shadow-glow-orange">
                     <i data-lucide="chef-hat" class="text-black w-6 h-6"></i>
                 </div>
-                <span class="font-black text-2xl tracking-tighter">JENTZEN <span class="text-brandOrange">SKY</span></span>
+                <span class="font-black text-2xl tracking-tighter text-white">JENTZEN <span class="text-brandOrange">SKY</span></span>
             </div>
-            <button onclick="window.location.href='#contact'" class="bg-brandOrange px-6 py-2 rounded-full font-bold text-sm">PM 聊聊</button>
+            <div class="hidden md:flex space-x-6">
+                <a href="#pain-points" class="hover:text-brandOrange font-bold text-sm">做老板的痛</a>
+                <a href="#usp" class="hover:text-brandOrange font-bold text-sm">我的招数</a>
+                <a href="#portfolio" class="hover:text-brandYellow font-bold text-sm">看作品 🔥</a>
+                <a href="https://wa.me/60126539881" class="bg-brandOrange px-6 py-2 rounded-full font-black text-sm">PM 聊聊</a>
+            </div>
         </div>
     </nav>
 
-    <section class="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden">
-        <div class="absolute inset-0 bg-gradient-to-b from-brandOrange/10 to-transparent"></div>
-        <div class="relative z-10 text-center px-4">
-            <div class="inline-block px-4 py-1 rounded-full border border-brandOrange text-brandOrange text-sm font-bold mb-6 animate-bounce-slow">
-                🔥 8年实战经验 • NO BULLSHIT
+    <section id="hero" class="relative min-h-screen flex items-center justify-center pt-20">
+        <div class="relative z-10 max-w-7xl mx-auto px-4 text-center">
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-brandOrange/50 bg-brandOrange/10 mb-8 animate-bounce-slow">
+                <i data-lucide="flame" class="w-5 h-5 text-brandOrange"></i>
+                <span class="text-brandOrange font-bold text-sm uppercase">8年实战经验 • No Bullshit</span>
             </div>
-            <h1 class="text-5xl md:text-7xl font-black mb-6 leading-tight">
-                Marketing 就像炒菜<br>
-                <span class="text-brandOrange">火候不对，再好的料都浪费！</span>
-            </h1>
-            <p class="text-xl text-gray-400 max-w-2xl mx-auto mb-10">
-                老板，别再烧钱做无效广告了！引流是放大器，产品是核心。让我帮你炒出一盘让全城排队的爆款好菜。
-            </p>
-            <div class="flex flex-wrap justify-center gap-4">
-                <a href="#portfolio" class="bg-brandOrange text-white px-8 py-4 rounded-xl font-black text-lg hover:scale-105 transition-transform">看我的战绩</a>
-                <a href="https://wa.me/60126539881" class="bg-white/10 border border-white/20 px-8 py-4 rounded-xl font-bold text-lg hover:bg-white/20">联系大厨</a>
+            <h1 class="text-5xl md:text-7xl font-black mb-6">Marketing 就像炒菜<br><span class="text-brandOrange">火候不对，再好的料都浪费！</span></h1>
+            <p class="text-xl text-gray-300 max-w-3xl mx-auto mb-12">老板，别再烧钱做无效广告了！我有 8 年实战经验，不讲 Theory，只讲 Result。不管是 F&B 还是 Service Line，我都懂怎样帮你找客源！</p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="https://wa.me/60126539881" class="px-8 py-4 bg-brandOrange text-white font-black text-lg rounded-xl shadow-glow-orange hover:scale-105 transition-all">来，帮忙“点火” 🔥</a>
+                <a href="#portfolio" class="px-8 py-4 bg-white/5 border border-white/20 text-white font-bold text-lg rounded-xl hover:bg-white/10">看我的战绩</a>
             </div>
         </div>
     </section>
 
-    <section id="portfolio" class="py-20 bg-black/50">
-        <div class="max-w-7xl mx-auto px-6 text-center">
-            <h2 class="text-3xl font-black mb-12">我的大厨 <span class="text-brandOrange">招牌菜</span></h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="glass p-6 rounded-2xl text-left">
-                    <div class="text-brandYellow font-black text-4xl mb-2">120%</div>
-                    <div class="text-white font-bold mb-2">平均业绩 Up</div>
-                    <p class="text-gray-400 text-sm">通过精准投放与内容营销，让生意额实现翻倍增长。</p>
+    <section id="pain-points" class="py-24 bg-zinc-900/50">
+        <div class="max-w-7xl mx-auto px-4">
+            <h2 class="text-center text-3xl md:text-4xl font-black mb-16">你的生意是不是也遇到<br><span class="text-brandOrange">这些“头痛”的问题</span>？</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="glass p-8 rounded-2xl border border-red-500/20">
+                    <i data-lucide="trending-down" class="w-12 h-12 text-red-500 mb-6"></i>
+                    <h3 class="text-2xl font-bold mb-4">做 F&B 的</h3>
+                    <p class="text-gray-400">食物明明很好吃，但店里静过图书馆？只能靠 Discount 来吸引那些“吃了就跑”的顾客？</p>
                 </div>
-                <div class="glass p-6 rounded-2xl text-left">
-                    <div class="text-brandOrange font-black text-4xl mb-2">63K+</div>
-                    <div class="text-white font-bold mb-2">独家 KOC 流量</div>
-                    <p class="text-gray-400 text-sm">旗下“好食光”平台，直接带客到店，无需等待。</p>
+                <div class="glass p-8 rounded-2xl border border-gray-500/20">
+                    <i data-lucide="ghost" class="w-12 h-12 text-gray-400 mb-6"></i>
+                    <h3 class="text-2xl font-bold mb-4">做 Service / 装修的</h3>
+                    <p class="text-gray-400">Facebook Page开了几年，PM 只有小猫两三只？Leads 也是那种问爽不要买的？</p>
                 </div>
-                <div class="glass p-6 rounded-2xl text-left">
-                    <div class="text-brandYellow font-black text-4xl mb-2">8 Years</div>
-                    <div class="text-white font-bold mb-2">实战沉淀</div>
-                    <p class="text-gray-400 text-sm">横跨 F&B、装修、服务业，懂生意逻辑，不只是懂 Ads。</p>
+                <div class="glass p-8 rounded-2xl border border-brandOrange/20">
+                    <i data-lucide="user-x" class="w-12 h-12 text-brandOrange mb-6"></i>
+                    <h3 class="text-2xl font-bold mb-4">做 Brand 的</h3>
+                    <p class="text-gray-400">产品很好，但没有人懂？投了 Ads 也是把钱丢进大海，ROI 惨不忍睹？</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <footer id="contact" class="py-10 text-center border-t border-white/10">
-        <p class="text-gray-500">© 2024 Jentzen SKY. All Rights Reserved.</p>
+    <section id="portfolio" class="py-24">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <h2 class="text-3xl md:text-4xl font-black mb-12">我的大厨 <span class="text-brandOrange">招牌菜</span> (Works)</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="relative group rounded-2xl overflow-hidden aspect-video bg-zinc-800">
+                   <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800" class="w-full h-full object-cover opacity-60 group-hover:scale-110 transition-transform">
+                   <div class="absolute inset-0 flex items-end p-6 bg-gradient-to-t from-black">
+                       <p class="font-bold text-white text-lg">F&B Brand Marketing</p>
+                   </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="py-20 text-center border-t border-white/10">
+        <p class="text-gray-500 font-bold">JENTZEN SKY | 让 Marketing 真正帮你赚钱</p>
     </footer>
 
     <script>
