@@ -99,18 +99,7 @@
             display: none;
         }
     </style>
-<script type="importmap">
-{
-  "imports": {
-    "react": "https://esm.sh/react@^19.2.3",
-    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
-    "react/": "https://esm.sh/react@^19.2.3/",
-    "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@^2.90.1",
-    "lucide-react": "https://esm.sh/lucide-react@^0.562.0"
-  }
-}
-</script>
-<link rel="stylesheet" href="/index.css">
+
 </head>
 <body class="bg-cyberDark min-h-screen text-white font-sans selection:bg-brandOrange selection:text-white">
 
@@ -831,6 +820,25 @@
             form.reset();
         });
     </script>
-<script type="module" src="/index.tsx"></script>
+<script>
+      // 这一行非常重要，它会扫描页面上所有的 <i data-lucide="..."> 并把它们转成图标
+      lucide.createIcons();
+      
+      // 移动端菜单开关逻辑 (可选，如果你需要那个三杠菜单能动)
+      function toggleMobileMenu() {
+        const menu = document.getElementById('mobile-menu');
+        menu.classList.toggle('hidden');
+      }
+
+      // 平滑滚动逻辑
+      function scrollToSection(id) {
+        document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+        // 如果是在手机端，点击后关闭菜单
+        const menu = document.getElementById('mobile-menu');
+        if (!menu.classList.contains('hidden')) {
+            menu.classList.add('hidden');
+        }
+      }
+    </script>
 </body>
 </html>
