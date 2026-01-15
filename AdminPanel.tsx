@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Settings, X, Save, RotateCcw, Image as ImageIcon, Type, Search, Lock, Share2, Upload, Trash2, Video, Plus } from 'lucide-react';
+import { Settings, X, Image as ImageIcon, Type, Search, Lock, Share2, Upload, Trash2, Video, Plus, RotateCcw } from 'lucide-react';
 import { useContent } from '../context/ContentContext';
 
 export const AdminPanel: React.FC = () => {
@@ -43,10 +43,8 @@ export const AdminPanel: React.FC = () => {
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, callback: (base64: string) => void) => {
     const file = e.target.files?.[0];
     if (file) {
-      // Limit size to prevent LocalStorage quota exceeded. Videos can be large.
-      // For this demo, we warn.
-      if (file.size > 3 * 1024 * 1024) { // 3MB limit
-        alert("文件过大 (Max 3MB)！因为是网页版，存储空间有限。建议上传小视频/GIF，或者使用 Link。");
+      if (file.size > 2 * 1024 * 1024) { // 2MB limit to be safe with localStorage
+        alert("文件过大 (Max 2MB)！因为是网页版，存储空间有限。建议使用压缩过的图片。");
         return;
       }
       const reader = new FileReader();
@@ -279,7 +277,7 @@ export const AdminPanel: React.FC = () => {
           {activeTab === 'partners' && (
             <div className="space-y-6">
               <div className="bg-black/40 p-4 rounded border border-white/10">
-                <h3 className="text-sm font-bold text-white mb-3">Add New Partner</h3>
+                <h3 className="text-sm font-bold text-white mb-3">Add New Partner (新增商家)</h3>
                 <div className="space-y-3">
                    <input 
                     type="text" 
@@ -306,11 +304,11 @@ export const AdminPanel: React.FC = () => {
                 </div>
               </div>
               
-              <h3 className="text-sm font-bold text-gray-400 mt-6 mb-2">Edit List</h3>
+              <h3 className="text-sm font-bold text-gray-400 mt-6 mb-2">Edit Partners List (现有商家)</h3>
               <div className="space-y-3 max-h-[400px] overflow-y-auto pr-1">
                 {content.partners.map(p => (
                   <div key={p.id} className="bg-white/5 p-3 rounded border border-white/5 flex flex-col gap-3">
-                    <div className="flex justify-between items-start gap-3">
+                    <div className="flex justify-between items-center gap-3">
                       <div className="flex-1 space-y-2">
                         <input 
                            type="text"
@@ -318,19 +316,19 @@ export const AdminPanel: React.FC = () => {
                            onChange={(e) => updatePartner(p.id, 'name', e.target.value)}
                            className="w-full bg-black/50 border border-white/10 rounded px-2 py-1 text-sm text-white"
                         />
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-3">
                             {p.logo ? (
-                                <img src={p.logo} alt="logo" className="w-8 h-8 rounded-full object-cover border border-white/10" />
+                                <img src={p.logo} alt="logo" className="w-8 h-8 rounded-full object-cover border border-white/10 bg-black" />
                             ) : (
-                                <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-[10px] text-gray-500">No</div>
+                                <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-[10px] text-gray-500 border border-white/10">No</div>
                             )}
-                            <label className="cursor-pointer bg-white/5 hover:bg-white/10 text-xs text-gray-400 px-2 py-1 rounded flex items-center gap-1">
-                                <Upload size={12} /> Change Logo
+                            <label className="cursor-pointer bg-brandOrange/10 hover:bg-brandOrange/20 text-brandOrange text-xs px-3 py-1.5 rounded flex items-center gap-1.5 transition-colors border border-brandOrange/30">
+                                <Upload size={12} /> Upload Logo
                                 <input type="file" className="hidden" accept="image/*" onChange={(e) => handleFileUpload(e, (url) => updatePartner(p.id, 'logo', url))} />
                             </label>
                         </div>
                       </div>
-                      <button onClick={() => removePartner(p.id)} className="text-red-500 hover:text-red-300 p-2 bg-red-500/10 rounded">
+                      <button onClick={() => removePartner(p.id)} className="text-red-500 hover:text-white p-2 bg-red-500/10 hover:bg-red-500 rounded transition-colors" title="Delete">
                         <Trash2 size={16} />
                       </button>
                     </div>
@@ -395,7 +393,7 @@ export const AdminPanel: React.FC = () => {
                         <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-white/10 rounded hover:border-brandOrange/50 bg-black/20 cursor-pointer transition-colors">
                           <Upload className="text-gray-400 mb-2" />
                           <span className="text-xs text-gray-500">Click to upload {newWorkType}</span>
-                          <span className="text-[10px] text-gray-600 mt-1">Max 3MB (For Web Demo)</span>
+                          <span className="text-[10px] text-gray-600 mt-1">Max 2MB (For Web Demo)</span>
                           <input 
                             type="file" 
                             className="hidden" 
@@ -416,11 +414,11 @@ export const AdminPanel: React.FC = () => {
               </div>
 
               <div className="space-y-2">
-                <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider">Current Portfolio</h3>
+                <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider">Current Portfolio (现有作品)</h3>
                  {(content.portfolio || []).map(item => (
-                   <div key={item.id} className="flex items-center justify-between p-3 bg-white/5 rounded border border-white/5">
+                   <div key={item.id} className="flex items-center justify-between p-3 bg-white/5 rounded border border-white/5 hover:border-white/20 transition-colors">
                       <div className="flex items-center gap-3 overflow-hidden">
-                        <div className="w-10 h-10 flex-shrink-0 bg-black rounded overflow-hidden">
+                        <div className="w-10 h-10 flex-shrink-0 bg-black rounded overflow-hidden border border-white/10">
                           {item.type === 'image' ? (
                             <img src={item.url} className="w-full h-full object-cover"/>
                           ) : (
@@ -434,7 +432,7 @@ export const AdminPanel: React.FC = () => {
                            <p className="text-[10px] text-gray-400 uppercase">{item.type}</p>
                         </div>
                       </div>
-                      <button onClick={() => removePortfolioItem(item.id)} className="text-red-500 hover:text-white p-2">
+                      <button onClick={() => removePortfolioItem(item.id)} className="text-gray-500 hover:text-red-500 p-2 transition-colors">
                         <Trash2 size={14} />
                       </button>
                    </div>
@@ -446,9 +444,9 @@ export const AdminPanel: React.FC = () => {
           <div className="mt-8 pt-6 border-t border-white/10">
             <button 
               onClick={resetContent}
-              className="w-full flex justify-center items-center gap-2 text-red-500 hover:text-red-400 text-sm py-2 font-bold"
+              className="w-full flex justify-center items-center gap-2 text-red-500 hover:text-red-400 text-sm py-2 font-bold bg-red-500/5 hover:bg-red-500/10 rounded"
             >
-              <RotateCcw size={14} /> Restore Default (重置)
+              <RotateCcw size={14} /> Restore Default (重置所有设定)
             </button>
           </div>
         </div>
