@@ -1,99 +1,836 @@
 <!DOCTYPE html>
 <html lang="zh-MY">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Jentzen SKY | Marketing 大厨</title>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jentzen SKY | 帮你 'Goreng' 出好业绩的 Marketing 大厨</title>
+    <meta name="description" content="做 Marketing 不只要 Volume，最重要是有 Sales！8年实战经验，Jentzen SKY 帮你把 Viewer 变成 Customer。">
+
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
+
+    <!-- Supabase JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Tailwind Config -->
     <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            fontFamily: {
-              sans: ['"Noto Sans SC"', 'sans-serif'],
-            },
-            colors: {
-              brandOrange: '#FF6600', // Shopee-like energetic orange
-              brandYellow: '#FFCC00', // Prosperity Gold
-              cyberDark: '#0a0a0a',   // Deep black/gray
-              cyberGray: '#1e1e1e',
-            },
-            boxShadow: {
-              'glow-orange': '0 0 15px #FF6600, 0 0 30px #FF660044',
-              'glow-yellow': '0 0 15px #FFCC00, 0 0 30px #FFCC0044',
-            },
-            animation: {
-              'bounce-slow': 'bounce 3s infinite',
-              'float': 'float 6s ease-in-out infinite',
-              'float-delayed': 'float 6s ease-in-out 3s infinite',
-              'shake': 'shake 0.5s cubic-bezier(.36,.07,.19,.97) both',
-              'pulse-glow': 'pulseGlow 2s infinite',
-            },
-            keyframes: {
-              float: {
-                '0%, 100%': { transform: 'translateY(0)' },
-                '50%': { transform: 'translateY(-20px)' },
-              },
-              shake: {
-                '10%, 90%': { transform: 'translate3d(-1px, 0, 0)' },
-                '20%, 80%': { transform: 'translate3d(2px, 0, 0)' },
-                '30%, 50%, 70%': { transform: 'translate3d(-4px, 0, 0)' },
-                '40%, 60%': { transform: 'translate3d(4px, 0, 0)' }
-              },
-              pulseGlow: {
-                '0%, 100%': { opacity: '1', boxShadow: '0 0 20px #FF660044' },
-                '50%': { opacity: '.8', boxShadow: '0 0 40px #FF660088' },
-              }
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Noto Sans SC"', 'sans-serif'],
+                    },
+                    colors: {
+                        brandOrange: '#FF6600',
+                        brandYellow: '#FFCC00',
+                        cyberDark: '#0a0a0a',
+                        cyberGray: '#1e1e1e',
+                        neonBlue: '#00F0FF',
+                    },
+                    boxShadow: {
+                        'glow-orange': '0 0 15px #FF6600, 0 0 30px #FF660044',
+                        'glow-yellow': '0 0 15px #FFCC00, 0 0 30px #FFCC0044',
+                    },
+                    animation: {
+                        'bounce-slow': 'bounce 3s infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                        'float-delayed': 'float 6s ease-in-out 3s infinite',
+                        'shake': 'shake 0.5s cubic-bezier(.36,.07,.19,.97) both',
+                        'pulse-glow': 'pulseGlow 2s infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        },
+                        shake: {
+                            '10%, 90%': { transform: 'translate3d(-1px, 0, 0)' },
+                            '20%, 80%': { transform: 'translate3d(2px, 0, 0)' },
+                            '30%, 50%, 70%': { transform: 'translate3d(-4px, 0, 0)' },
+                            '40%, 60%': { transform: 'translate3d(4px, 0, 0)' }
+                        },
+                        pulseGlow: {
+                            '0%, 100%': { opacity: '1', boxShadow: '0 0 20px #FF660044' },
+                            '50%': { opacity: '.8', boxShadow: '0 0 40px #FF660088' },
+                        }
+                    }
+                }
             }
-          }
         }
-      }
     </script>
+
     <style>
-      body {
-        background-color: #0a0a0a;
-        color: #ffffff;
-        scroll-behavior: smooth;
-      }
-      /* Custom Scrollbar */
-      ::-webkit-scrollbar {
-        width: 8px;
-      }
-      ::-webkit-scrollbar-track {
-        background: #1e1e1e; 
-      }
-      ::-webkit-scrollbar-thumb {
-        background: #555; 
-        border-radius: 4px;
-      }
-      ::-webkit-scrollbar-thumb:hover {
-        background: #FF6600; 
-      }
-      
-      /* Glassmorphism Utilities */
-      .glass {
-        background: rgba(255, 255, 255, 0.05);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-      }
+        body {
+            background-color: #0a0a0a;
+            color: #ffffff;
+            scroll-behavior: smooth;
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1e1e1e;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #555;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #FF6600;
+        }
+        
+        /* Glassmorphism Utilities */
+        .glass {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Portfolio Filter Logic classes */
+        .hidden-item {
+            display: none;
+        }
     </style>
-  <script type="importmap">
+<script type="importmap">
 {
   "imports": {
     "react": "https://esm.sh/react@^19.2.3",
     "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
     "react/": "https://esm.sh/react@^19.2.3/",
-    "lucide-react": "https://esm.sh/lucide-react@^0.562.0",
-    "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@^2.90.1"
+    "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@^2.90.1",
+    "lucide-react": "https://esm.sh/lucide-react@^0.562.0"
   }
 }
 </script>
 <link rel="stylesheet" href="/index.css">
 </head>
-  <body>
-    <div id="root"></div>
-  <script type="module" src="/index.tsx"></script>
+<body class="bg-cyberDark min-h-screen text-white font-sans selection:bg-brandOrange selection:text-white">
+
+    <!-- Navbar -->
+    <nav id="navbar" class="fixed w-full z-50 transition-all duration-300 bg-transparent">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <!-- Logo -->
+                <div class="flex-shrink-0 flex items-center gap-2 cursor-pointer" onclick="scrollToSection('hero')">
+                    <div class="w-10 h-10 bg-gradient-to-tr from-brandOrange to-brandYellow rounded-full flex items-center justify-center shadow-glow-orange">
+                        <i data-lucide="chef-hat" class="text-black w-6 h-6"></i>
+                    </div>
+                    <span class="font-black text-2xl tracking-tighter text-white">
+                        JENTZEN <span class="text-brandOrange">SKY</span>
+                    </span>
+                </div>
+                
+                <!-- Desktop Menu -->
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-6">
+                        <button onclick="scrollToSection('pain-points')" class="hover:text-brandOrange transition-colors px-3 py-2 rounded-md text-sm font-bold">做老板的痛</button>
+                        <button onclick="scrollToSection('usp')" class="hover:text-brandOrange transition-colors px-3 py-2 rounded-md text-sm font-bold">我的招数</button>
+                        <button onclick="scrollToSection('services')" class="hover:text-brandOrange transition-colors px-3 py-2 rounded-md text-sm font-bold">Service Menu</button>
+                        <button onclick="scrollToSection('portfolio')" class="hover:text-brandYellow text-brandYellow transition-colors px-3 py-2 rounded-md text-sm font-bold border border-brandYellow/30">看作品 🔥</button>
+                        <button onclick="scrollToSection('success')" class="hover:text-brandOrange transition-colors px-3 py-2 rounded-md text-sm font-bold">战绩 Wall</button>
+                        <button onclick="scrollToSection('contact')" class="bg-brandOrange text-white hover:bg-white hover:text-brandOrange transition-all px-6 py-2 rounded-full font-black text-sm shadow-glow-orange uppercase ml-2">
+                            PM 聊聊
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Mobile Menu Button -->
+                <div class="-mr-2 flex md:hidden">
+                    <button onclick="toggleMobileMenu()" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-white/10 focus:outline-none">
+                        <i id="menu-icon" data-lucide="menu" class="h-6 w-6"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-cyberGray border-b border-white/10 absolute w-full left-0 top-20">
+            <div class="px-4 pt-4 pb-6 space-y-2">
+                <button onclick="scrollToSection('pain-points')" class="text-gray-300 hover:text-brandOrange block px-3 py-3 rounded-md text-base font-bold w-full text-left border-b border-white/5">做老板的痛</button>
+                <button onclick="scrollToSection('usp')" class="text-gray-300 hover:text-brandOrange block px-3 py-3 rounded-md text-base font-bold w-full text-left border-b border-white/5">我的招数</button>
+                <button onclick="scrollToSection('services')" class="text-gray-300 hover:text-brandOrange block px-3 py-3 rounded-md text-base font-bold w-full text-left border-b border-white/5">Service Menu</button>
+                <button onclick="scrollToSection('portfolio')" class="text-brandYellow hover:text-white block px-3 py-3 rounded-md text-base font-bold w-full text-left border-b border-white/5">看作品 (Works) 🔥</button>
+                <button onclick="scrollToSection('success')" class="text-gray-300 hover:text-brandOrange block px-3 py-3 rounded-md text-base font-bold w-full text-left border-b border-white/5">战绩 Wall</button>
+                <button onclick="scrollToSection('contact')" class="text-white bg-brandOrange hover:bg-brandOrange/90 block px-3 py-3 rounded-md text-base font-black w-full text-center mt-6 shadow-glow-orange">PM 聊聊</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="hero" class="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
+        <!-- Background Elements -->
+        <div class="absolute top-0 left-0 w-full h-full bg-[url('https://picsum.photos/1920/1080?grayscale&blur=2')] bg-cover bg-center opacity-30"></div>
+        <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-black/70 via-black/80 to-cyberDark"></div>
+        
+        <!-- Floating Emojis -->
+        <div class="absolute top-1/4 left-10 text-4xl opacity-20 animate-float pointer-events-none select-none">🍔</div>
+        <div class="absolute bottom-1/4 right-10 text-4xl opacity-20 animate-float-delayed pointer-events-none select-none">📈</div>
+        <div class="absolute top-1/3 right-1/4 text-5xl opacity-10 animate-float pointer-events-none select-none">🔥</div>
+        <div class="absolute bottom-1/3 left-1/4 text-4xl opacity-10 animate-float-delayed pointer-events-none select-none">💰</div>
+
+        <!-- Glows -->
+        <div class="absolute top-20 right-0 w-96 h-96 bg-brandOrange/20 rounded-full blur-[100px] animate-pulse"></div>
+        <div class="absolute bottom-0 left-0 w-80 h-80 bg-brandYellow/10 rounded-full blur-[100px]"></div>
+
+        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center text-center">
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-brandOrange/50 bg-brandOrange/10 backdrop-blur-sm mb-8 animate-bounce-slow hover:bg-brandOrange/20 transition-colors cursor-default">
+                <i data-lucide="flame" class="w-5 h-5 text-brandOrange animate-pulse"></i>
+                <span class="text-brandOrange font-bold tracking-wide text-sm uppercase">8年实战经验 • No Bullshit</span>
+            </div>
+            
+            <h1 class="text-5xl md:text-7xl font-black text-white mb-6 leading-tight tracking-tight">
+                Marketing 就像炒菜<br />
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-brandOrange to-brandYellow drop-shadow-sm relative inline-block">
+                    火候不对，再好的料都浪费！
+                    <span class="absolute -top-4 -right-6 text-2xl text-white animate-pulse">✨</span>
+                </span>
+                <span class="relative block mt-2 text-white/90">
+                    <svg class="absolute w-2/3 left-1/2 -translate-x-1/2 h-4 -bottom-2 text-brandOrange opacity-80" viewBox="0 0 100 10" preserveAspectRatio="none">
+                        <path d="M0 5 Q 50 15 100 5" stroke="currentColor" stroke-width="4" fill="none" class="animate-pulse"/>
+                    </svg>
+                </span>
+            </h1>
+
+            <p class="mt-8 text-xl text-gray-300 max-w-3xl leading-relaxed whitespace-pre-line font-medium backdrop-blur-sm bg-black/10 p-4 rounded-xl">
+                老板，别再烧钱做无效广告了！引流是 Amplifier，产品是 Core。我有 8 年实战经验，不讲 Theory，只讲 Result。不管是 F&B 还是 Service Line，我都懂怎样帮你找客源，让你的生意 Huat 啊！
+            </p>
+
+            <div class="mt-12 flex flex-col sm:flex-row gap-4 w-full sm:w-auto z-20">
+                <button onclick="scrollToSection('contact')" class="group relative px-8 py-4 bg-gradient-to-r from-brandOrange to-red-600 text-white font-black text-lg rounded-xl overflow-hidden shadow-glow-orange hover:scale-105 transition-all duration-300 active:scale-95">
+                    <div class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 skew-y-12"></div>
+                    <span class="relative z-10 flex items-center justify-center gap-2">
+                        来，帮忙“点火” 🔥 <i data-lucide="arrow-right" class="w-6 h-6 group-hover:translate-x-1 transition-transform"></i>
+                    </span>
+                </button>
+                
+                <button onclick="scrollToSection('success')" class="px-8 py-4 bg-white/5 border border-white/20 text-white font-bold text-lg rounded-xl hover:bg-white/10 hover:border-brandOrange/50 transition-all flex items-center justify-center gap-2 active:scale-95">
+                    看我的战绩 (Result)
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pain Points -->
+    <section id="pain-points" class="py-24 bg-cyberGray relative border-t border-white/5">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-black text-white mb-4">
+                    你的生意是不是也遇到<br/><span class="text-brandOrange">这些“头痛”的问题</span>？
+                </h2>
+                <div class="h-1.5 w-24 bg-brandOrange mx-auto rounded-full"></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+                <!-- Item 1 -->
+                <div class="group p-8 rounded-2xl border border-white/10 transition-all duration-300 hover:shadow-2xl hover:animate-shake cursor-default bg-red-500/5 hover:border-red-500/50 hover:bg-red-500/10">
+                    <div class="mb-6 p-4 rounded-full bg-black/40 w-fit group-hover:scale-110 transition-transform duration-300 border border-white/5 shadow-lg relative overflow-hidden">
+                        <i data-lucide="trending-down" class="w-12 h-12 text-red-500"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-white mb-4 group-hover:text-red-400 transition-colors">做 F&B 的</h3>
+                    <p class="text-gray-400 leading-relaxed font-medium group-hover:text-gray-300">
+                        食物明明很好吃，但店里静过图书馆？只能靠 Discount 来吸引那些“吃了就跑”的顾客？
+                    </p>
+                </div>
+                <!-- Item 2 -->
+                <div class="group p-8 rounded-2xl border border-white/10 transition-all duration-300 hover:shadow-2xl hover:animate-shake cursor-default bg-gray-500/5 hover:border-gray-400/50 hover:bg-gray-500/10">
+                    <div class="mb-6 p-4 rounded-full bg-black/40 w-fit group-hover:scale-110 transition-transform duration-300 border border-white/5 shadow-lg relative overflow-hidden">
+                        <i data-lucide="ghost" class="w-12 h-12 text-gray-400"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-white mb-4 group-hover:text-red-400 transition-colors">做 Service / 装修的</h3>
+                    <p class="text-gray-400 leading-relaxed font-medium group-hover:text-gray-300">
+                        Facebook Page开了几年，PM 只有小猫两三只？Leads 也是那种问爽不要买的？
+                    </p>
+                </div>
+                <!-- Item 3 -->
+                <div class="group p-8 rounded-2xl border border-white/10 transition-all duration-300 hover:shadow-2xl hover:animate-shake cursor-default bg-orange-500/5 hover:border-brandOrange/50 hover:bg-brandOrange/10">
+                    <div class="mb-6 p-4 rounded-full bg-black/40 w-fit group-hover:scale-110 transition-transform duration-300 border border-white/5 shadow-lg relative overflow-hidden">
+                        <i data-lucide="user-x" class="w-12 h-12 text-brandOrange"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-white mb-4 group-hover:text-red-400 transition-colors">做 Brand 的</h3>
+                    <p class="text-gray-400 leading-relaxed font-medium group-hover:text-gray-300">
+                        产品很好，但没有人懂？投了 Ads 也是把钱丢进大海，ROI 惨不忍睹？
+                    </p>
+                </div>
+            </div>
+
+            <div class="flex justify-center">
+                <a href="https://wa.me/60126539881?text=Hi%20Jentzen,%20sakit%20kepala%20la%20my%20marketing." target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 bg-[#25D366] text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-[#128C7E] shadow-lg hover:-translate-y-1 transition-all group">
+                    <i data-lucide="message-circle" class="w-6 h-6 group-hover:animate-bounce"></i>
+                    解决你的 Sakit Kepala: 012-653 9881
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Chef Theory (USP) -->
+    <section id="usp" class="py-24 bg-black relative overflow-hidden">
+        <div class="absolute right-0 top-1/4 w-1/2 h-1/2 bg-brandOrange/5 rounded-full blur-[120px]"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center mb-24">
+                <div>
+                    <div class="inline-flex items-center gap-2 px-4 py-1 rounded-full border border-brandYellow text-brandYellow font-bold text-sm mb-6 bg-brandYellow/10">
+                        <i data-lucide="chef-hat" class="w-4 h-4"></i> UNIQUE SELLING POINT
+                    </div>
+                    <h2 class="text-4xl md:text-5xl font-black text-white mb-6 leading-tight">
+                        独家 <span class="text-brandOrange">“Cooking 理论”</span>
+                    </h2>
+                    <p class="text-xl text-gray-300 mb-8 leading-relaxed">
+                        很多老板以为只要丢钱投 Ads，生意就会自动好。
+                        <br/><br/>
+                        <span class="text-brandYellow font-bold text-2xl">错！大错特错！</span>
+                        <br/><br/>
+                        引流只是 Amplifier（放大器）。你的产品是“食材”，我是“大厨”。
+                        如果食材不新鲜，神仙也救不了你。但如果食材好，
+                        <span class="text-brandOrange font-bold border-b border-brandOrange/50 pb-1">我会用我的火候（广告技术）和摆盘（Content Marketing），帮你炒出一盘让全城排队的爆款好菜！</span>
+                    </p>
+                    <div class="flex gap-4 mb-8">
+                        <div class="flex items-center gap-2 text-white font-bold bg-white/10 px-4 py-2 rounded-lg">
+                            <i data-lucide="utensils" class="text-brandOrange"></i> 挖卖点
+                        </div>
+                        <div class="flex items-center gap-2 text-white font-bold bg-white/10 px-4 py-2 rounded-lg">
+                            <i data-lucide="store" class="text-brandOrange"></i> 讲故事
+                        </div>
+                    </div>
+                    <a href="https://wa.me/60126539881?text=Hi%20Jentzen,%20I%20want%20to%20know%20more%20about%20your%20Chef%20Theory." target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 bg-[#25D366] text-white px-6 py-3 rounded-full font-bold hover:bg-[#128C7E] transition-colors">
+                        <i data-lucide="message-circle" class="w-5 h-5"></i> 马上咨询: 012-653 9881
+                    </a>
+                </div>
+                <div class="relative">
+                    <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=800&auto=format&fit=crop" alt="Marketing Growth" class="rounded-3xl rotate-3 hover:rotate-0 transition-transform duration-500 border-2 border-brandOrange/30 shadow-glow-orange opacity-90">
+                    <div class="absolute -bottom-6 -left-6 bg-cyberGray p-6 rounded-xl border border-white/10 shadow-xl">
+                        <p class="text-brandYellow font-black text-4xl">120%</p>
+                        <p class="text-gray-400 text-sm font-bold">平均业绩 Up</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ecosystem -->
+            <div class="bg-gradient-to-br from-gray-900 to-black rounded-3xl p-8 md:p-12 border border-brandOrange/20 relative overflow-hidden shadow-2xl">
+                <div class="absolute top-0 right-0 w-64 h-64 bg-brandOrange/10 rounded-full blur-[80px]"></div>
+                
+                <div class="relative z-10 text-center md:text-left grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                    <div>
+                        <div class="mb-6 flex justify-center md:justify-start">
+                            <div class="bg-white/10 p-4 rounded-xl border border-white/5 inline-block backdrop-blur-sm">
+                                <span class="text-3xl font-black text-white flex items-center gap-2">
+                                    <span class="text-brandYellow">好</span>
+                                    <span class="text-white">食</span>
+                                    <span class="text-brandYellow">光</span>
+                                    <span class="text-sm bg-brandYellow text-black px-2 py-0.5 rounded ml-2 font-bold">FUN 4 LIFE</span>
+                                </span>
+                            </div>
+                        </div>
+
+                        <h3 class="text-3xl font-bold text-white mb-4">“自带流量”的 Ecosystem</h3>
+                        <p class="text-gray-400 mb-6 font-medium">
+                            我不只是帮你投广告，我直接把流量带给你！<br/>
+                            利用我旗下 <strong>"好食光"</strong> 平台的 KOC 资源，全网粉丝超过 63,000+。
+                            一站式分发到 5 大热门平台，让你的店瞬间变网红店。
+                        </p>
+                        <div class="flex flex-wrap gap-3 justify-center md:justify-start mb-6">
+                            <span class="px-4 py-2 bg-white/10 rounded-full text-sm text-gray-300">小红书 (XHS)</span>
+                            <span class="px-4 py-2 bg-white/10 rounded-full text-sm text-gray-300">Facebook</span>
+                            <span class="px-4 py-2 bg-white/10 rounded-full text-sm text-gray-300">抖音 (Douyin)</span>
+                            <span class="px-4 py-2 bg-white/10 rounded-full text-sm text-gray-300">Instagram</span>
+                            <span class="px-4 py-2 bg-white/10 rounded-full text-sm text-gray-300">TikTok</span>
+                        </div>
+                        
+                        <div class="flex justify-center md:justify-start">
+                            <a href="https://wa.me/60126539881?text=Hi%20Jentzen,%20I%20am%20interested%20in%20your%20Fun4Life%20ecosystem." target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 text-[#25D366] font-bold hover:text-white transition-colors border-b border-[#25D366] pb-1">
+                                <i data-lucide="message-circle" class="w-4 h-4"></i> 加入好食光: 012-653 9881
+                            </a>
+                        </div>
+                    </div>
+                    <div class="flex flex-col items-center justify-center border-l-0 md:border-l border-white/10 pl-0 md:pl-12">
+                        <i data-lucide="users" class="w-16 h-16 text-brandOrange mb-4"></i>
+                        <div class="text-5xl font-black text-white mb-2">50K+</div>
+                        <div class="text-brandOrange tracking-widest font-bold uppercase">Total Followers</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services -->
+    <section id="services" class="py-24 bg-cyberGray">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-black text-white mb-4">
+                    Marketing 大厨的 <span class="text-brandOrange">Full Course Menu</span>
+                </h2>
+                <p class="text-gray-400 max-w-2xl mx-auto font-medium">
+                    从 Account Management、拍摄剪辑、Design 到下 Ads，一站式搞定。<br/>
+                    我不做所谓的“小编”，我做的是帮你赚钱的“操盘手”。
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-16">
+                <!-- Service 1 -->
+                <div class="glass bg-black/50 backdrop-blur-sm p-8 rounded-2xl border border-white/5 transition-all duration-300 group hover:border-brandOrange hover:shadow-[0_0_20px_rgba(255,102,0,0.2)] flex flex-col hover:-translate-y-2">
+                    <div class="flex items-start gap-4 mb-4">
+                        <div class="p-3 bg-white/5 rounded-lg group-hover:scale-110 transition-transform duration-300">
+                            <i data-lucide="layout-dashboard" class="w-8 h-8 text-brandOrange"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-white mb-3 group-hover:text-brandOrange transition-colors">Social Media 全托管</h3>
+                            <p class="text-gray-400 text-sm leading-relaxed font-medium">
+                                Facebook & Instagram 交给我们。不仅仅是 Post 爽，我们负责账号规划、回复 PM、还会做 Crisis Management。让你的 Page 看起来 Professional。
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Service 2 -->
+                <div class="glass bg-black/50 backdrop-blur-sm p-8 rounded-2xl border border-white/5 transition-all duration-300 group hover:border-brandYellow hover:shadow-[0_0_20px_rgba(255,204,0,0.2)] flex flex-col hover:-translate-y-2">
+                    <div class="flex items-start gap-4 mb-4">
+                        <div class="p-3 bg-white/5 rounded-lg group-hover:scale-110 transition-transform duration-300">
+                            <i data-lucide="video" class="w-8 h-8 text-brandYellow"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-white mb-3 group-hover:text-brandOrange transition-colors">拍摄与设计 (Shooting & Design)</h3>
+                            <p class="text-gray-400 text-sm leading-relaxed font-medium">
+                                专业 Team 上门拍摄。无论是 Reels 短视频、产品照、还是 Menu 设计，全部包办。用 Pattern 很多的画面来吸引顾客。
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Service 3 -->
+                <div class="glass bg-black/50 backdrop-blur-sm p-8 rounded-2xl border border-white/5 transition-all duration-300 group hover:border-red-500 hover:shadow-[0_0_20px_rgba(239,68,68,0.2)] flex flex-col hover:-translate-y-2">
+                    <div class="flex items-start gap-4 mb-4">
+                        <div class="p-3 bg-white/5 rounded-lg group-hover:scale-110 transition-transform duration-300">
+                            <i data-lucide="rocket" class="w-8 h-8 text-red-500"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-white mb-3 group-hover:text-brandOrange transition-colors">广告投放 (Ads Performance)</h3>
+                            <p class="text-gray-400 text-sm leading-relaxed font-medium">
+                                Facebook & Instagram Ads 精准投放。拒绝盲目烧钱，每一分 Budget 都花在刀刃上。我们看 Data 讲话，不好我们就改到好。
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Service 4 -->
+                <div class="glass bg-black/50 backdrop-blur-sm p-8 rounded-2xl border border-white/5 transition-all duration-300 group hover:border-green-500 hover:shadow-[0_0_20px_rgba(34,197,94,0.2)] flex flex-col hover:-translate-y-2">
+                    <div class="flex items-start gap-4 mb-4">
+                        <div class="p-3 bg-white/5 rounded-lg group-hover:scale-110 transition-transform duration-300">
+                            <i data-lucide="megaphone" class="w-8 h-8 text-green-500"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-white mb-3 group-hover:text-brandOrange transition-colors">好食光推广配套 (Fun4Life)</h3>
+                            <p class="text-gray-400 text-sm leading-relaxed font-medium">
+                                最强引流爆款！结合 KOC + 5大平台，瞬间引爆 Traffic。
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Portfolio -->
+    <section id="portfolio" class="py-24 bg-cyberGray relative overflow-hidden">
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10 pointer-events-none"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center mb-12">
+                <div class="inline-block animate-bounce-slow">
+                    <i data-lucide="sparkles" class="text-brandYellow w-8 h-8 mx-auto mb-2"></i>
+                </div>
+                <h2 class="text-3xl md:text-4xl font-black text-white mb-4">
+                    我的大厨 <span class="text-brandOrange">招牌菜</span> (Works)
+                </h2>
+                <p class="text-gray-400 font-medium max-w-2xl mx-auto">
+                    这里都是我亲自操刀的作品。无论是让人流口水的 Food Porn，还是看一眼就想 Click 的 Viral Video，通通都在这里。
+                </p>
+            </div>
+
+            <!-- Filters -->
+            <div class="flex flex-wrap justify-center gap-4 mb-12">
+                <button onclick="filterPortfolio('all')" class="portfolio-btn active px-6 py-2 rounded-full font-bold transition-all whitespace-nowrap bg-brandOrange text-white shadow-glow-orange scale-105" data-filter="all">
+                    全部 All
+                </button>
+                <button onclick="filterPortfolio('image')" class="portfolio-btn px-6 py-2 rounded-full font-bold transition-all flex items-center justify-center gap-2 whitespace-nowrap bg-black/40 text-gray-400 border border-white/10 hover:text-white" data-filter="image">
+                    <i data-lucide="image" class="w-4 h-4"></i> 平面 Design
+                </button>
+                <button onclick="filterPortfolio('video')" class="portfolio-btn px-6 py-2 rounded-full font-bold transition-all flex items-center justify-center gap-2 whitespace-nowrap bg-black/40 text-gray-400 border border-white/10 hover:text-white" data-filter="video">
+                    <i data-lucide="play-circle" class="w-4 h-4"></i> 视频 Video
+                </button>
+            </div>
+
+            <!-- Gallery -->
+            <div class="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6" id="portfolio-grid">
+                <!-- Item 1: Image -->
+                <div class="portfolio-item image break-inside-avoid group relative rounded-2xl overflow-hidden bg-black/50 border border-white/10 hover:border-brandOrange/50 transition-all duration-500 hover:shadow-2xl hover:-translate-y-2">
+                    <div class="relative overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&q=80&w=800" alt="F&B Menu Design" class="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-110">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
+                            <span class="text-brandYellow text-xs font-bold uppercase tracking-wider mb-1 flex items-center gap-1">
+                                <i data-lucide="image" class="w-3 h-3"></i> Graphic / Poster
+                            </span>
+                            <h3 class="text-white font-bold text-lg">F&B Menu Design</h3>
+                        </div>
+                    </div>
+                </div>
+                <!-- Item 2: Image -->
+                <div class="portfolio-item image break-inside-avoid group relative rounded-2xl overflow-hidden bg-black/50 border border-white/10 hover:border-brandOrange/50 transition-all duration-500 hover:shadow-2xl hover:-translate-y-2">
+                    <div class="relative overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1511690656952-34342d2c28f5?auto=format&fit=crop&q=80&w=800" alt="CNY Poster" class="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-110">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
+                            <span class="text-brandYellow text-xs font-bold uppercase tracking-wider mb-1 flex items-center gap-1">
+                                <i data-lucide="image" class="w-3 h-3"></i> Graphic / Poster
+                            </span>
+                            <h3 class="text-white font-bold text-lg">CNY Campaign Poster</h3>
+                        </div>
+                    </div>
+                </div>
+                <!-- Item 3: Image -->
+                <div class="portfolio-item image break-inside-avoid group relative rounded-2xl overflow-hidden bg-black/50 border border-white/10 hover:border-brandOrange/50 transition-all duration-500 hover:shadow-2xl hover:-translate-y-2">
+                    <div class="relative overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1550963393-27d967469a4c?auto=format&fit=crop&q=80&w=800" alt="Restaurant Opening" class="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-110">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
+                            <span class="text-brandYellow text-xs font-bold uppercase tracking-wider mb-1 flex items-center gap-1">
+                                <i data-lucide="image" class="w-3 h-3"></i> Graphic / Poster
+                            </span>
+                            <h3 class="text-white font-bold text-lg">Restaurant Opening</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials (Success Stories) -->
+    <section id="success" class="py-24 bg-black border-y border-white/5">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
+                <div>
+                    <h2 class="text-3xl md:text-4xl font-black text-white mb-4">
+                        战绩 Wall <span class="text-brandOrange">Success Stories</span>
+                    </h2>
+                    <p class="text-gray-400 font-medium">Data 不会骗人，业绩才是硬道理。</p>
+                </div>
+                <div class="hidden md:block">
+                    <span class="text-brandYellow font-mono text-sm border border-brandYellow px-2 py-1 rounded">Trust Score: 100%</span>
+                </div>
+            </div>
+
+            <!-- Cases -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20">
+                <!-- Case 1 -->
+                <div class="group relative rounded-2xl overflow-hidden border border-white/10 bg-cyberGray hover:border-brandOrange/50 transition-colors">
+                    <div class="aspect-w-16 aspect-h-9 h-48 overflow-hidden bg-gray-800 relative">
+                        <img src="https://placehold.co/600x400/FFD700/d60000?text=Ming+Jiong+%E5%90%8D%E5%B0%87&font=roboto" alt="Ming Jiong" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 opacity-80 group-hover:opacity-100">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-xl font-bold text-white leading-tight">名将美食馆 Ming Jiong</h3>
+                            <div class="flex items-center gap-1 bg-brandOrange/20 px-2 py-1 rounded text-brandOrange text-xs font-bold whitespace-nowrap ml-2">
+                                <i data-lucide="trending-up" class="w-3 h-3"></i> Sales 翻倍 120%
+                            </div>
+                        </div>
+                        <p class="text-gray-400 text-sm mb-4 font-medium">
+                            主打炭烧烧腊。之前亏到想哭，我帮他重新讲 Brand Story，直接打中吃货的心。3个月直接反亏为盈，烧肉都不够卖！
+                        </p>
+                    </div>
+                </div>
+                <!-- Case 2 -->
+                <div class="group relative rounded-2xl overflow-hidden border border-white/10 bg-cyberGray hover:border-brandOrange/50 transition-colors">
+                    <div class="aspect-w-16 aspect-h-9 h-48 overflow-hidden bg-gray-800 relative">
+                        <img src="https://picsum.photos/400/300?random=3" alt="Summer Cafe" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 opacity-80 group-hover:opacity-100">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-xl font-bold text-white leading-tight">Summer Cafe 夏日冰室</h3>
+                            <div class="flex items-center gap-1 bg-brandOrange/20 px-2 py-1 rounded text-brandOrange text-xs font-bold whitespace-nowrap ml-2">
+                                <i data-lucide="trending-up" class="w-3 h-3"></i> Booking 电话响不停
+                            </div>
+                        </div>
+                        <p class="text-gray-400 text-sm mb-4 font-medium">
+                            定位重新调整，专门 Target 年轻人。Ads 一跑，Reservation 满到 Kitchen 做不及，老板笑着说'太忙了'。
+                        </p>
+                    </div>
+                </div>
+                <!-- Case 3 -->
+                <div class="group relative rounded-2xl overflow-hidden border border-white/10 bg-cyberGray hover:border-brandOrange/50 transition-colors">
+                    <div class="aspect-w-16 aspect-h-9 h-48 overflow-hidden bg-gray-800 relative">
+                        <img src="https://picsum.photos/400/300?random=2" alt="Curry House" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 opacity-80 group-hover:opacity-100">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-xl font-bold text-white leading-tight">星喜咖喱面家</h3>
+                            <div class="flex items-center gap-1 bg-brandOrange/20 px-2 py-1 rounded text-brandOrange text-xs font-bold whitespace-nowrap ml-2">
+                                <i data-lucide="trending-up" class="w-3 h-3"></i> 排队排到路边
+                            </div>
+                        </div>
+                        <p class="text-gray-400 text-sm mb-4 font-medium">
+                            用'好食光' KOC 去探店，Video 一出，周末直接爆场。老板忙到没有时间吃饭，还要请人帮忙数钱！
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Workflow -->
+    <section class="py-20 bg-cyberGray">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <!-- Step 1 -->
+                <div class="relative p-6 border-l-4 border-white/10 hover:border-brandOrange transition-colors bg-black/20 rounded-r-lg">
+                    <span class="text-5xl font-black text-white/5 absolute top-2 right-4 font-sans italic">01</span>
+                    <h3 class="text-lg font-black text-white mb-2">初步咨询 (Consultation)</h3>
+                    <p class="text-gray-400 text-sm font-medium">了解你的生意模式与 Sakkie 痛点</p>
+                </div>
+                <!-- Step 2 -->
+                <div class="relative p-6 border-l-4 border-white/10 hover:border-brandOrange transition-colors bg-black/20 rounded-r-lg">
+                    <span class="text-5xl font-black text-white/5 absolute top-2 right-4 font-sans italic">02</span>
+                    <h3 class="text-lg font-black text-white mb-2">需求评估 (Audit)</h3>
+                    <p class="text-gray-400 text-sm font-medium">Check 你的 Brand，找出问题根源</p>
+                </div>
+                <!-- Step 3 -->
+                <div class="relative p-6 border-l-4 border-white/10 hover:border-brandOrange transition-colors bg-black/20 rounded-r-lg">
+                    <span class="text-5xl font-black text-white/5 absolute top-2 right-4 font-sans italic">03</span>
+                    <h3 class="text-lg font-black text-white mb-2">提案报价 (Quotation)</h3>
+                    <p class="text-gray-400 text-sm font-medium">量身定制方案，Price 公道透明</p>
+                </div>
+                <!-- Step 4 -->
+                <div class="relative p-6 border-l-4 border-white/10 hover:border-brandOrange transition-colors bg-black/20 rounded-r-lg">
+                    <span class="text-5xl font-black text-white/5 absolute top-2 right-4 font-sans italic">04</span>
+                    <h3 class="text-lg font-black text-white mb-2">业绩起飞 (Huat Ah)</h3>
+                    <p class="text-gray-400 text-sm font-medium">Execute 方案，优化 Data，坐等收钱</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Form -->
+    <section id="contact" class="py-24 bg-black relative">
+        <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-brandOrange to-brandYellow"></div>
+        
+        <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="bg-cyberGray/50 backdrop-blur-xl rounded-3xl p-8 md:p-12 border border-white/10 shadow-[0_0_50px_rgba(255,102,0,0.2)]">
+                
+                <div class="text-center mb-10">
+                    <h2 class="text-3xl font-black text-white mb-2">
+                        准备好让 Sales <span class="text-brandOrange">翻倍</span> 了吗？
+                    </h2>
+                    <p class="text-gray-400 font-medium">
+                        填这个 Form，会直接 Jump 去 WhatsApp 跟我讲话。<br/>
+                        <span class="text-brandYellow text-sm font-bold">* Slots 有限，每个月只接 3 个 Full Package 客户</span>
+                    </p>
+                </div>
+
+                <form id="leadForm" class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-bold text-gray-400 mb-2">你的名字 Name</label>
+                            <input required type="text" name="name" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-brandOrange focus:ring-1 focus:ring-brandOrange transition-all font-medium" placeholder="Jentzen Sky">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-gray-400 mb-2">电话 Phone</label>
+                            <input required type="tel" name="phone" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-brandOrange focus:ring-1 focus:ring-brandOrange transition-all font-medium" placeholder="012-345 6789">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-bold text-gray-400 mb-2">公司/品牌 Company</label>
+                            <input required type="text" name="company_name" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-brandOrange focus:ring-1 focus:ring-brandOrange transition-all font-medium" placeholder="My Awesome Brand">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-gray-400 mb-2">Social Handle (FB/IG)</label>
+                            <input type="text" name="social_media_handle" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-brandOrange focus:ring-1 focus:ring-brandOrange transition-all font-medium" placeholder="@mybrand">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-bold text-gray-400 mb-2">你需要什么 Service?</label>
+                        <select name="service_type" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-brandOrange focus:ring-1 focus:ring-brandOrange transition-all font-medium">
+                            <option value="全案 Marketing Strategy (包到完)" class="bg-black">全案 Marketing Strategy (包到完)</option>
+                            <option value="Content Creation (拍照/拍片/写文案)" class="bg-black">Content Creation (拍照/拍片/写文案)</option>
+                            <option value="Ads 广告投放 (FB/IG/TikTok)" class="bg-black">Ads 广告投放 (FB/IG/TikTok)</option>
+                            <option value="KOC / 好食光 Viral 推广" class="bg-black">KOC / 好食光 Viral 推广</option>
+                            <option value="其他吹水/合作咨询" class="bg-black">其他吹水/合作咨询</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-bold text-gray-400 mb-2">Budget Range (RM)</label>
+                        <select name="budget_range" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-brandOrange focus:ring-1 focus:ring-brandOrange transition-all font-medium">
+                            <option value="" disabled selected class="bg-black">请选择 Budget</option>
+                            <option value="<3k" class="bg-black">RM 1,000 - RM 3,000</option>
+                            <option value="3k-5k" class="bg-black">RM 3,000 - RM 5,000</option>
+                            <option value="5k-10k" class="bg-black">RM 5,000 - RM 10,000</option>
+                            <option value=">10k" class="bg-black">RM 10,000 + (Boss!)</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" id="submitBtn" class="w-full bg-gradient-to-r from-brandOrange to-brandYellow text-black font-black text-lg py-4 rounded-xl hover:shadow-[0_0_20px_#FF6600] transition-all flex items-center justify-center gap-2 uppercase">
+                        <span>Send 去 WhatsApp</span> <i data-lucide="send" class="w-5 h-5"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-black py-12 border-t border-white/5">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-6">
+            <div class="text-center md:text-left">
+                <h3 class="text-2xl font-black text-white">JENTZEN <span class="text-neonBlue">SKY</span></h3>
+                <p class="text-gray-500 text-sm mt-2">© 2025 All Rights Reserved.</p>
+            </div>
+            
+            <div class="flex gap-6">
+                <a href="#" class="text-gray-400 hover:text-neonBlue transition-colors"><i data-lucide="facebook"></i></a>
+                <a href="#" class="text-gray-400 hover:text-pink-500 transition-colors"><i data-lucide="instagram"></i></a>
+                <a href="#" class="text-gray-400 hover:text-white transition-colors"><i data-lucide="video"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Floating WhatsApp -->
+    <a href="https://wa.me/60126539881?text=Hello%20Jentzen%2C%20I%20am%20interested%20in%20your%20marketing%20services." target="_blank" rel="noopener noreferrer" class="fixed bottom-6 right-6 z-50 bg-[#25D366] text-white p-3 px-4 rounded-xl shadow-lg hover:shadow-[0_0_20px_#25D366] hover:-translate-y-1 transition-all animate-bounce flex flex-col items-center gap-1">
+        <i data-lucide="message-circle" class="w-8 h-8"></i>
+        <span class="text-[10px] font-bold uppercase tracking-wide">WhatsApp 联系我</span>
+    </a>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // Navbar Scroll Effect
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 20) {
+                navbar.classList.add('bg-cyberDark/95', 'backdrop-blur-md', 'border-b', 'border-white/10', 'shadow-lg');
+                navbar.classList.remove('bg-transparent');
+            } else {
+                navbar.classList.remove('bg-cyberDark/95', 'backdrop-blur-md', 'border-b', 'border-white/10', 'shadow-lg');
+                navbar.classList.add('bg-transparent');
+            }
+        });
+
+        // Mobile Menu Toggle
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            const icon = document.getElementById('menu-icon');
+            if (menu.classList.contains('hidden')) {
+                menu.classList.remove('hidden');
+                // Could change icon to X here
+            } else {
+                menu.classList.add('hidden');
+            }
+        }
+
+        // Scroll to Section
+        function scrollToSection(id) {
+            document.getElementById('mobile-menu').classList.add('hidden');
+            const element = document.getElementById(id);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        // Portfolio Filter Logic
+        function filterPortfolio(category) {
+            const items = document.querySelectorAll('.portfolio-item');
+            const buttons = document.querySelectorAll('.portfolio-btn');
+
+            // Update buttons state
+            buttons.forEach(btn => {
+                const btnCategory = btn.getAttribute('data-filter');
+                if (btnCategory === category) {
+                    if (category === 'all') {
+                        btn.className = 'portfolio-btn px-6 py-2 rounded-full font-bold transition-all whitespace-nowrap bg-brandOrange text-white shadow-glow-orange scale-105';
+                    } else if (category === 'image') {
+                        btn.className = 'portfolio-btn px-6 py-2 rounded-full font-bold transition-all flex items-center justify-center gap-2 whitespace-nowrap bg-brandYellow text-black shadow-glow-yellow scale-105';
+                    } else if (category === 'video') {
+                        btn.className = 'portfolio-btn px-6 py-2 rounded-full font-bold transition-all flex items-center justify-center gap-2 whitespace-nowrap bg-red-600 text-white shadow-[0_0_15px_#DC2626] scale-105';
+                    }
+                } else {
+                    btn.className = 'portfolio-btn px-6 py-2 rounded-full font-bold transition-all flex items-center justify-center gap-2 whitespace-nowrap bg-black/40 text-gray-400 border border-white/10 hover:text-white';
+                }
+            });
+
+            // Update grid items
+            items.forEach(item => {
+                if (category === 'all') {
+                    item.classList.remove('hidden-item');
+                } else {
+                    if (item.classList.contains(category)) {
+                        item.classList.remove('hidden-item');
+                    } else {
+                        item.classList.add('hidden-item');
+                    }
+                }
+            });
+        }
+
+        // Supabase Logic
+        // IMPORTANT: Replace these with your actual Supabase URL and Key in your own environment
+        // Since we are in a demo mode without env vars, we use placeholders.
+        // The code gracefully handles the error and ensures WhatsApp redirect still happens.
+        const SUPABASE_URL = 'YOUR_SUPABASE_URL_HERE'; 
+        const SUPABASE_KEY = 'YOUR_SUPABASE_ANON_KEY_HERE';
+        
+        let supabaseClient = null;
+        if (typeof supabase !== 'undefined' && SUPABASE_URL !== 'YOUR_SUPABASE_URL_HERE') {
+            supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        }
+
+        // Form Submission
+        const form = document.getElementById('leadForm');
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('submitBtn');
+            const originalBtnText = btn.innerHTML;
+            btn.innerHTML = 'Jumping...';
+            btn.disabled = true;
+
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
+
+            // 1. Try to save to Supabase
+            if (supabaseClient) {
+                try {
+                    await supabaseClient.from('leads').insert([data]);
+                } catch (err) {
+                    console.log('Supabase insert failed (expected in demo):', err);
+                }
+            }
+
+            // 2. Construct WhatsApp Message
+            const message = `你好 Jentzen，我想咨询 Marketing 服务：
+姓名: ${data.name}
+公司: ${data.company_name}
+电话: ${data.phone}
+社交媒体: ${data.social_media_handle}
+服务类型: ${data.service_type}
+预算范围: ${data.budget_range}`;
+
+            const whatsappUrl = `https://wa.me/60126539881?text=${encodeURIComponent(message)}`;
+
+            // 3. Redirect
+            window.open(whatsappUrl, '_blank');
+
+            // Reset form UI
+            btn.innerHTML = originalBtnText;
+            btn.disabled = false;
+            form.reset();
+        });
+    </script>
+<script type="module" src="/index.tsx"></script>
 </body>
 </html>
