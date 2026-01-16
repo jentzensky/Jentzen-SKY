@@ -12,14 +12,14 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
 
-    <!-- React & ReactDOM (UMD for simple single file usage) -->
+    <!-- React & ReactDOM -->
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     
     <!-- Babel for JSX transformation in browser -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
-    <!-- Lucide Icons (Global) -->
+    <!-- Lucide Icons (Vanilla JS version) -->
     <script src="https://unpkg.com/lucide@latest"></script>
     
     <!-- Confetti -->
@@ -156,28 +156,96 @@
         // --- Setup & Utilities ---
         const { useState, useEffect, createContext, useContext } = React;
         
-        // Lucide Icons are available globally via the 'lucide' object
-        // We destructure them for easier usage in components
-        const { 
-            Menu, X, ChefHat, ArrowRight, Flame, TrendingDown, UserX, Ghost, 
-            MessageCircle, Utensils, Users, Store, ExternalLink, LayoutDashboard, 
-            Video, Rocket, Megaphone, CheckCircle2, Star, TrendingUp, Building2, 
-            FileText, Quote, User, Send, CheckCircle, AlertCircle, Facebook, 
-            Instagram, Settings, Image: ImageIcon, Type, Search, Lock, Share2, 
-            Upload, Trash2, Plus, RotateCcw, Download, Copy, Check, PlayCircle, 
-            Sparkles, FolderOpen, Calculator, Target, Info, RefreshCcw, AlertTriangle 
-        } = lucide;
+        // --- Icon System for Single File ---
+        // Creates React components that render Lucide icons via the global 'lucide' object
+        const createIcon = (iconName) => {
+            return ({ size = 24, className = "", ...props }) => {
+                return (
+                    <i 
+                        data-lucide={iconName} 
+                        style={{ width: size, height: size, display: 'inline-block' }} 
+                        className={className} 
+                        {...props} 
+                    />
+                );
+            };
+        };
 
-        // Ensure icons are rendered after mount/updates (Lucide global script requirement)
+        // Map all used icons manually to ensure they exist
+        const Menu = createIcon('menu');
+        const X = createIcon('x');
+        const ChefHat = createIcon('chef-hat');
+        const ArrowRight = createIcon('arrow-right');
+        const Flame = createIcon('flame');
+        const TrendingDown = createIcon('trending-down');
+        const UserX = createIcon('user-x');
+        const Ghost = createIcon('ghost');
+        const MessageCircle = createIcon('message-circle');
+        const Utensils = createIcon('utensils');
+        const Users = createIcon('users');
+        const Store = createIcon('store');
+        const ExternalLink = createIcon('external-link');
+        const LayoutDashboard = createIcon('layout-dashboard');
+        const Video = createIcon('video');
+        const Rocket = createIcon('rocket');
+        const Megaphone = createIcon('megaphone');
+        const CheckCircle2 = createIcon('check-circle-2');
+        const Star = createIcon('star');
+        const TrendingUp = createIcon('trending-up');
+        const Building2 = createIcon('building-2');
+        const FileText = createIcon('file-text');
+        const Quote = createIcon('quote');
+        const User = createIcon('user');
+        const Send = createIcon('send');
+        const CheckCircle = createIcon('check-circle');
+        const AlertCircle = createIcon('alert-circle');
+        const Facebook = createIcon('facebook');
+        const Instagram = createIcon('instagram');
+        const Settings = createIcon('settings');
+        const ImageIcon = createIcon('image');
+        const Type = createIcon('type');
+        const Search = createIcon('search');
+        const Lock = createIcon('lock');
+        const Share2 = createIcon('share-2');
+        const Upload = createIcon('upload');
+        const Trash2 = createIcon('trash-2');
+        const Plus = createIcon('plus');
+        const RotateCcw = createIcon('rotate-ccw');
+        const Download = createIcon('download');
+        const Copy = createIcon('copy');
+        const Check = createIcon('check');
+        const PlayCircle = createIcon('play-circle');
+        const Sparkles = createIcon('sparkles');
+        const FolderOpen = createIcon('folder-open');
+        const Calculator = createIcon('calculator');
+        const Target = createIcon('target');
+        const Info = createIcon('info');
+        const RefreshCcw = createIcon('refresh-ccw');
+        const AlertTriangle = createIcon('alert-triangle');
+
+        // Global hook to refresh icons when DOM changes
         const useLucide = () => {
             useEffect(() => {
-                if (window.lucide) window.lucide.createIcons();
+                if (window.lucide) {
+                    window.lucide.createIcons();
+                }
             });
         };
 
-        // --- Data & Types (Simulated) ---
-        // Replacing TS Interfaces with standard JS Objects/defaults
+        // --- Mock Supabase Client ---
+        // Since we are in a single HTML file without env vars, we mock this.
+        const supabase = {
+            from: (table) => ({
+                insert: async (data) => {
+                    console.log(`[Mock Supabase] Inserting into ${table}:`, data);
+                    return { error: null };
+                }
+            }),
+            supabaseUrl: null
+        };
+        const TABLE_NAME = 'leads';
 
+        // --- Data & Types (Simulated) ---
         const defaultContent = {
             seo: {
                 title: "Jentzen SKY | 帮你 'Goreng' 出好业绩的 Marketing 大厨",
@@ -194,21 +262,21 @@
                     name: "Alex (名将美食馆)",
                     result: "12点烧肉就卖完",
                     desc: "以前店里静到拍苍蝇，找不到吃。Jentzen 帮我搞了那个 Brand Story 还有拍美美的烧肉照，现在 everyday 12点 烧肉就卖完 liao！生意好到我想哭，真的很 Keng！",
-                    image: "" // Empty triggers User Icon
+                    image: ""
                 },
                 {
                     id: '2',
                     name: "Tommy Wong (Summer Cafe)",
                     result: "厨房佬 Complain 做不及",
                     desc: "之前都是安哥安娣来，Jentzen 把那个菠萝包和奶茶拍到几诱人一下，现在全是年轻人排队打卡！厨房佬都 Complain 做不及，但我数钱数到爽啦！",
-                    image: "" // Empty triggers User Icon
+                    image: ""
                 },
                 {
                     id: '3',
                     name: "Hou (星喜咖喱面)",
                     result: "排队排到大马路",
                     desc: "那个 Video 一出，哇不得了！Weekend 排队排到大马路，连 KL 的人都特地跑来吃。我的咖喱面卖到锅底都空去。这个 Marketing 钱花得最值得！",
-                    image: "" // Empty triggers User Icon
+                    image: ""
                 }
             ],
             partners: [],
@@ -234,7 +302,7 @@
 
             useEffect(() => {
                 localStorage.setItem('site_content', JSON.stringify(content));
-                if (window.lucide) window.lucide.createIcons(); // Refresh icons on content change
+                if (window.lucide) window.lucide.createIcons();
             }, [content]);
 
             const updateSEO = (seo) => setContent(prev => ({ ...prev, seo }));
