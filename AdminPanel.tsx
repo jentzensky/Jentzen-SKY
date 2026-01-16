@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
-import { Settings, X, Image as ImageIcon, Type, Search, Lock, Share2, Upload, Trash2, Video, Plus, RotateCcw } from 'lucide-react';
+import { Settings, X, Image as ImageIcon, Type, Search, Lock, Share2, Upload, Trash2, Video, Plus, RotateCcw, Download, Copy, Check } from 'lucide-react';
 import { useContent } from '../context/ContentContext';
 
 export const AdminPanel: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'seo' | 'hero' | 'cases' | 'partners' | 'portfolio'>('seo');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [showExport, setShowExport] = useState(false);
+  const [copied, setCopied] = useState(false);
   
   // Login State
   const [username, setUsername] = useState('');
@@ -43,8 +45,8 @@ export const AdminPanel: React.FC = () => {
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, callback: (base64: string) => void) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (file.size > 2 * 1024 * 1024) { // 2MB limit to be safe with localStorage
-        alert("文件过大 (Max 2MB)！因为是网页版，存储空间有限。建议使用压缩过的图片。");
+      if (file.size > 2 * 1024 * 1024) { // 2MB limit
+        alert("文件过大 (Max 2MB)！建议压缩图片后再上传。");
         return;
       }
       const reader = new FileReader();
@@ -78,6 +80,13 @@ export const AdminPanel: React.FC = () => {
     } else {
       alert("请填写标题并上传文件");
     }
+  };
+
+  const copyExportCode = () => {
+    const code = `const defaultContent: SiteContent = ${JSON.stringify(content, null, 2)};`;
+    navigator.clipboard.writeText(code);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   if (!isOpen) {
@@ -137,6 +146,67 @@ export const AdminPanel: React.FC = () => {
     );
   }
 
+  // Export Modal
+  if (showExport) {
+    return (
+      <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/90 backdrop-blur p-4">
+        <div className="bg-cyberGray p-6 rounded-xl border border-brandOrange w-full max-w-3xl max-h-[90vh] flex flex-col shadow-2xl animate-fade-in">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-xl font-bold text-white flex items-center gap-2">
+              <Download className="text-brandOrange" /> Export Data for GitHub
+            </h3>
+            <button onClick={() => setShowExport(false)} className="text-gray-400 hover:text-white"><X /></button>
+          </div>
+          
+          <div className="bg-brandOrange/10 border border-brandOrange/20 p-4 rounded-lg mb-4">
+             <h4 className="font-bold text-brandOrange mb-1">如何永久保存修改？</h4>
+             <p className="text-gray-300 text-sm">
+                因为网站运行在浏览器中，您刚上传的照片只保存在本地。要将其搬进 GitHub：
+                <br/>
+                1. 点击下方的 <b>Copy Code</b> 按钮。
+                <br/>
+                2. 打开您的代码文件 <code>context/ContentContext.tsx</code>。
+                <br/>
+                3. 找到 <code>const defaultContent: SiteContent = ...</code> 这一段。
+                <br/>
+                4. 用您复制的代码<b>完全替换</b>它。
+             </p>
+          </div>
+
+          <div className="flex-1 relative mb-4 overflow-hidden border border-white/10 rounded-lg bg-black">
+             <textarea 
+                readOnly 
+                className="w-full h-full p-4 text-xs font-mono text-green-400 bg-transparent focus:outline-none resize-none"
+                value={`const defaultContent: SiteContent = ${JSON.stringify(content, null, 2)};`}
+             />
+             <button 
+               onClick={copyExportCode}
+               className="absolute top-2 right-2 bg-white/10 hover:bg-white/20 text-white p-2 rounded backdrop-blur transition-colors"
+               title="Copy to Clipboard"
+             >
+               {copied ? <Check size={16} className="text-green-400"/> : <Copy size={16}/>}
+             </button>
+          </div>
+
+          <button 
+            onClick={copyExportCode}
+            className={`w-full py-4 rounded-lg font-bold text-lg flex items-center justify-center gap-2 shadow-lg transition-all ${copied ? 'bg-green-600 text-white' : 'bg-brandOrange text-white hover:bg-brandOrange/90'}`}
+          >
+            {copied ? (
+              <>
+                <Check size={24} /> Code Copied! (已复制)
+              </>
+            ) : (
+              <>
+                <Copy size={24} /> Copy Code (复制完整代码)
+              </>
+            )}
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   // Main Panel
   return (
     <div className="fixed inset-0 z-[60] flex justify-end">
@@ -144,8 +214,8 @@ export const AdminPanel: React.FC = () => {
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setIsOpen(false)}></div>
       
       {/* Panel */}
-      <div className="relative w-full max-w-md bg-cyberGray border-l border-brandOrange/30 h-full overflow-y-auto shadow-2xl animate-slide-in">
-        <div className="sticky top-0 bg-cyberGray/95 backdrop-blur z-10 border-b border-white/10 p-4 flex justify-between items-center">
+      <div className="relative w-full max-w-md bg-cyberGray border-l border-brandOrange/30 h-full overflow-y-auto shadow-2xl animate-slide-in flex flex-col">
+        <div className="sticky top-0 bg-cyberGray/95 backdrop-blur z-10 border-b border-white/10 p-4 flex justify-between items-center flex-shrink-0">
           <h2 className="text-xl font-bold text-white flex items-center gap-2">
             <Settings className="text-brandOrange" /> 管理 Panel
           </h2>
@@ -163,7 +233,7 @@ export const AdminPanel: React.FC = () => {
           </div>
         </div>
 
-        <div className="p-4">
+        <div className="p-4 flex-1 overflow-y-auto">
           {/* Tabs */}
           <div className="flex gap-2 mb-6 overflow-x-auto pb-2 scrollbar-hide">
              <TabButton active={activeTab === 'seo'} onClick={() => setActiveTab('seo')} label="SEO" icon={<Search size={14} />} />
@@ -393,7 +463,7 @@ export const AdminPanel: React.FC = () => {
                         <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-white/10 rounded hover:border-brandOrange/50 bg-black/20 cursor-pointer transition-colors">
                           <Upload className="text-gray-400 mb-2" />
                           <span className="text-xs text-gray-500">Click to upload {newWorkType}</span>
-                          <span className="text-[10px] text-gray-600 mt-1">Max 2MB (For Web Demo)</span>
+                          <span className="text-[10px] text-gray-600 mt-1">Max 2MB</span>
                           <input 
                             type="file" 
                             className="hidden" 
@@ -440,15 +510,23 @@ export const AdminPanel: React.FC = () => {
               </div>
             </div>
           )}
+        </div>
+        
+        {/* Footer Actions */}
+        <div className="p-4 border-t border-white/10 bg-cyberGray/95 backdrop-blur z-10 flex flex-col gap-3">
+          <button 
+            onClick={() => setShowExport(true)}
+            className="w-full bg-green-600 text-white font-bold py-3 rounded hover:bg-green-500 transition-colors flex items-center justify-center gap-2 shadow-lg animate-pulse-glow"
+          >
+            <Download size={18} /> 📥 Export Data for GitHub
+          </button>
 
-          <div className="mt-8 pt-6 border-t border-white/10">
-            <button 
-              onClick={resetContent}
-              className="w-full flex justify-center items-center gap-2 text-red-500 hover:text-red-400 text-sm py-2 font-bold bg-red-500/5 hover:bg-red-500/10 rounded"
-            >
-              <RotateCcw size={14} /> Restore Default (重置所有设定)
-            </button>
-          </div>
+          <button 
+            onClick={resetContent}
+            className="w-full flex justify-center items-center gap-2 text-red-500 hover:text-red-400 text-xs py-2 font-bold bg-red-500/5 hover:bg-red-500/10 rounded"
+          >
+            <RotateCcw size={12} /> Restore Default (重置)
+          </button>
         </div>
       </div>
     </div>

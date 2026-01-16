@@ -155,7 +155,12 @@ export const ContactForm: React.FC = () => {
                </div>
 
                <div>
-                 <label className="block text-sm font-bold text-gray-400 mb-2">Budget Range (RM)</label>
+                 <label className="block text-sm font-bold text-gray-400 mb-2">
+                    Total Budget Range (Service + Ads)
+                    <span className="block text-xs text-brandOrange font-normal mt-1">
+                      *Service Fee RM 1,500 起，Ads Budget RM 1,000 起
+                    </span>
+                 </label>
                  <select 
                   name="budget_range"
                   value={formData.budget_range}
@@ -163,10 +168,9 @@ export const ContactForm: React.FC = () => {
                   className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-brandOrange focus:ring-1 focus:ring-brandOrange transition-all font-medium"
                  >
                    <option value="" disabled className="bg-black">请选择 Budget</option>
-                   <option value="<3k" className="bg-black">RM 1,000 - RM 3,000</option>
-                   <option value="3k-5k" className="bg-black">RM 3,000 - RM 5,000</option>
-                   <option value="5k-10k" className="bg-black">RM 5,000 - RM 10,000</option>
-                   <option value=">10k" className="bg-black">RM 10,000 + (Boss!)</option>
+                   <option value="RM 2.5k - RM 5k" className="bg-black">RM 2,500 - RM 5,000 (Starter)</option>
+                   <option value="RM 5k - RM 10k" className="bg-black">RM 5,000 - RM 10,000 (Growth)</option>
+                   <option value="> RM 10k" className="bg-black">RM 10,000 + (Aggressive Scale)</option>
                  </select>
                </div>
 

@@ -1,15 +1,7 @@
-import React, { useState } from 'react';
-import { useContent } from '../context/ContentContext';
-import { PlayCircle, Image as ImageIcon, Sparkles } from 'lucide-react';
+import React from 'react';
+import { PlayCircle, Image as ImageIcon, Sparkles, ExternalLink, FolderOpen } from 'lucide-react';
 
 export const Portfolio: React.FC = () => {
-  const { content } = useContent();
-  const [filter, setFilter] = useState<'all' | 'image' | 'video'>('all');
-
-  const filteredItems = (content.portfolio || []).filter(item => 
-    filter === 'all' ? true : item.type === filter
-  );
-
   return (
     <section id="portfolio" className="py-24 bg-cyberGray relative overflow-hidden">
       {/* Background Decor */}
@@ -24,82 +16,59 @@ export const Portfolio: React.FC = () => {
             我的大厨 <span className="text-brandOrange">招牌菜</span> (Works)
           </h2>
           <p className="text-gray-400 font-medium max-w-2xl mx-auto">
-            这里都是我亲自操刀的作品。无论是让人流口水的 Food Porn，还是看一眼就想 Click 的 Viral Video，通通都在这里。
+            这里都是我亲自操刀的作品。点击下方文件夹，直接进入 Google Drive 查看高清原图和完整 Video。
           </p>
         </div>
 
-        {/* Filters - Fixed: Added flex-wrap and items-center to prevent overlap */}
-        <div className="flex flex-wrap justify-center gap-4 mb-12">
-          <button 
-            onClick={() => setFilter('all')}
-            className={`px-6 py-2 rounded-full font-bold transition-all whitespace-nowrap ${filter === 'all' ? 'bg-brandOrange text-white shadow-glow-orange scale-105' : 'bg-black/40 text-gray-400 border border-white/10 hover:text-white hover:border-brandOrange/50'}`}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+          
+          {/* Graphic Design Card */}
+          <a 
+            href="https://drive.google.com/drive/folders/1DEwAKXOl2dNqxT6xDSg4WWIq90LmwbIv?usp=drive_link"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group relative h-80 rounded-3xl overflow-hidden border border-white/10 hover:border-brandYellow/50 transition-all duration-500 hover:shadow-[0_0_30px_rgba(255,204,0,0.3)] hover:-translate-y-2"
           >
-            全部 All
-          </button>
-          <button 
-            onClick={() => setFilter('image')}
-            className={`px-6 py-2 rounded-full font-bold transition-all flex items-center justify-center gap-2 whitespace-nowrap ${filter === 'image' ? 'bg-brandYellow text-black shadow-glow-yellow scale-105' : 'bg-black/40 text-gray-400 border border-white/10 hover:text-white hover:border-brandYellow/50'}`}
-          >
-            <ImageIcon size={18} className="flex-shrink-0" /> 
-            <span>平面 Design</span>
-          </button>
-          <button 
-            onClick={() => setFilter('video')}
-            className={`px-6 py-2 rounded-full font-bold transition-all flex items-center justify-center gap-2 whitespace-nowrap ${filter === 'video' ? 'bg-red-600 text-white shadow-[0_0_15px_#DC2626] scale-105' : 'bg-black/40 text-gray-400 border border-white/10 hover:text-white hover:border-red-600/50'}`}
-          >
-            <PlayCircle size={18} className="flex-shrink-0" /> 
-            <span>视频 Video</span>
-          </button>
-        </div>
-
-        {/* Gallery Grid */}
-        <div className="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6">
-          {filteredItems.map((item, index) => (
-            <div 
-              key={item.id} 
-              className="break-inside-avoid group relative rounded-2xl overflow-hidden bg-black/50 border border-white/10 hover:border-brandOrange/50 transition-all duration-500 hover:shadow-2xl hover:-translate-y-2"
-              style={{ animationDelay: `${index * 100}ms` }}
-            >
-              {item.type === 'image' ? (
-                <div className="relative overflow-hidden">
-                  <img 
-                    src={item.url} 
-                    alt={item.title} 
-                    className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-110"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
-                    <span className="text-brandYellow text-xs font-bold uppercase tracking-wider mb-1 flex items-center gap-1">
-                      <ImageIcon size={12}/> Graphic / Poster
-                    </span>
-                    <h3 className="text-white font-bold text-lg">{item.title}</h3>
-                  </div>
-                </div>
-              ) : (
-                <div className="relative">
-                  <video 
-                    src={item.url} 
-                    controls 
-                    className="w-full h-auto bg-black"
-                    poster={item.url + "#t=0.1"} // Simple trick for video thumbnail if supported
-                  />
-                  <div className="p-4 bg-black/80 border-t border-white/5">
-                    <span className="text-red-500 text-xs font-bold uppercase tracking-wider mb-1 flex items-center gap-1">
-                      <PlayCircle size={12}/> Video Content
-                    </span>
-                    <h3 className="text-white font-bold text-sm truncate">{item.title}</h3>
-                  </div>
-                </div>
-              )}
+            {/* Background Image */}
+            <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1626785774573-4b7993143a2d?q=80&w=1600&auto=format&fit=crop')] bg-cover bg-center transition-transform duration-700 group-hover:scale-110 grayscale group-hover:grayscale-0"></div>
+            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent opacity-90 group-hover:opacity-80 transition-opacity"></div>
+            
+            <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-8">
+              <div className="w-16 h-16 bg-brandYellow/20 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform backdrop-blur-md border border-brandYellow/30">
+                <ImageIcon className="w-8 h-8 text-brandYellow" />
+              </div>
+              <h3 className="text-3xl font-black text-white mb-2">平面设计作品集</h3>
+              <p className="text-brandYellow font-bold tracking-widest text-sm uppercase mb-6">Graphic Design Portfolio</p>
+              <div className="inline-flex items-center gap-2 bg-white/10 hover:bg-brandYellow hover:text-black text-white px-6 py-3 rounded-full font-bold transition-all backdrop-blur-sm border border-white/20 group-hover:border-transparent">
+                <FolderOpen size={18} /> 点击查看 (Google Drive) <ExternalLink size={14} />
+              </div>
             </div>
-          ))}
+          </a>
+
+          {/* Video Card */}
+          <a 
+            href="https://drive.google.com/drive/folders/1WyJPJ2Hr6zQIyaeYwXA5uEGWAJ3QtWr7?usp=drive_link"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group relative h-80 rounded-3xl overflow-hidden border border-white/10 hover:border-red-600/50 transition-all duration-500 hover:shadow-[0_0_30px_rgba(220,38,38,0.3)] hover:-translate-y-2"
+          >
+            {/* Background Image */}
+            <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?q=80&w=1600&auto=format&fit=crop')] bg-cover bg-center transition-transform duration-700 group-hover:scale-110 grayscale group-hover:grayscale-0"></div>
+            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent opacity-90 group-hover:opacity-80 transition-opacity"></div>
+            
+            <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-8">
+              <div className="w-16 h-16 bg-red-600/20 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform backdrop-blur-md border border-red-600/30">
+                <PlayCircle className="w-8 h-8 text-red-500" />
+              </div>
+              <h3 className="text-3xl font-black text-white mb-2">视频拍摄作品集</h3>
+              <p className="text-red-500 font-bold tracking-widest text-sm uppercase mb-6">Video Production Portfolio</p>
+              <div className="inline-flex items-center gap-2 bg-white/10 hover:bg-red-600 hover:text-white text-white px-6 py-3 rounded-full font-bold transition-all backdrop-blur-sm border border-white/20 group-hover:border-transparent">
+                <FolderOpen size={18} /> 点击查看 (Google Drive) <ExternalLink size={14} />
+              </div>
+            </div>
+          </a>
+
         </div>
-
-        {filteredItems.length === 0 && (
-          <div className="text-center py-20 bg-white/5 rounded-2xl border border-white/5 border-dashed animate-pulse">
-            <p className="text-gray-500">暂时没有作品，请去 Admin Panel 上传。</p>
-          </div>
-        )}
-
       </div>
     </section>
   );

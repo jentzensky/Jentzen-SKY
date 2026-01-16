@@ -2,105 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { SiteContent, TestCase, Partner, PortfolioItem } from '../types';
 
 // Default content (Initial State) - Malaysian Localized
-const defaultContent: SiteContent = {const defaultContent: SiteContent = {
-  "seo": {
-    "title": "Jentzen SKY | 帮你 'Goreng' 出好业绩的 Marketing 大厨",
-    "description": "做 Marketing 不只要 Volume，最重要是有 Sales！8年实战经验，Jentzen SKY 帮你把 Viewer 变成 Customer。"
-  },
-  "hero": {
-    "title": "Marketing 就像炒菜",
-    "subtitle": "火候不对，再好的料都浪费！",
-    "description": "老板，别再烧钱做无效广告了！引流是 Amplifier，产品是 Core。我有 8 年实战经验，不讲 Theory，只讲 Result。不管是 F&B 还是 Service Line，我都懂怎样帮你找客源，让你的生意 Huat 啊！"
-  },
-  "cases": [
-    {
-      "id": "1",
-      "name": "名将美食馆 Ming Jiong",
-      "result": "Sales 翻倍 120%",
-      "desc": "主打炭烧烧腊。之前亏到想哭，我帮他重新讲 Brand Story，直接打中吃货的心。3个月直接反亏为盈，烧肉都不够卖！",
-      "image": "https://placehold.co/600x400/FFD700/d60000?text=Ming+Jiong+%E5%90%8D%E5%B0%87&font=roboto"
-    },
-    {
-      "id": "2",
-      "name": "Summer Cafe 夏日冰室",
-      "result": "Booking 电话响不停",
-      "desc": "定位重新调整，专门 Target 年轻人。Ads 一跑，Reservation 满到 Kitchen 做不及，老板笑着说'太忙了'。",
-      "image": "https://picsum.photos/400/300?random=3"
-    },
-    {
-      "id": "3",
-      "name": "星喜咖喱面家",
-      "result": "排队排到路边",
-      "desc": "用'好食光' KOC 去探店，Video 一出，周末直接爆场。老板忙到没有时间吃饭，还要请人帮忙数钱！",
-      "image": "https://picsum.photos/400/300?random=2"
-    }
-  ],
-  "partners": [
-    {
-      "id": "1",
-      "name": "Ah Muk Cha Chaan Teng"
-    },
-    {
-      "id": "2",
-      "name": "Back Alley Group"
-    },
-    {
-      "id": "3",
-      "name": "Mr. Wu"
-    },
-    {
-      "id": "4",
-      "name": "Fenix Restaurant"
-    },
-    {
-      "id": "5",
-      "name": "Ming Jiong"
-    },
-    {
-      "id": "6",
-      "name": "De' massak"
-    },
-    {
-      "id": "7",
-      "name": "Issen Hin Ramen"
-    },
-    {
-      "id": "8",
-      "name": "Hao Yi Tea House"
-    },
-    {
-      "id": "9",
-      "name": "Ni Kizoku"
-    },
-    {
-      "id": "10",
-      "name": "Zok Noodle House"
-    }
-  ],
-  "portfolio": [
-    {
-      "id": "1",
-      "type": "image",
-      "url": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&q=80&w=800",
-      "title": "F&B Menu Design",
-      "category": "Graphic"
-    },
-    {
-      "id": "2",
-      "type": "image",
-      "url": "https://images.unsplash.com/photo-1511690656952-34342d2c28f5?auto=format&fit=crop&q=80&w=800",
-      "title": "CNY Campaign Poster",
-      "category": "Graphic"
-    },
-    {
-      "id": "3",
-      "type": "image",
-      "url": "https://images.unsplash.com/photo-1550963393-27d967469a4c?auto=format&fit=crop&q=80&w=800",
-      "title": "Restaurant Opening",
-      "category": "Graphic"
-    }
-  ]
-};
+const defaultContent: SiteContent = {
   seo: {
     title: "Jentzen SKY | 帮你 'Goreng' 出好业绩的 Marketing 大厨",
     description: "做 Marketing 不只要 Volume，最重要是有 Sales！8年实战经验，Jentzen SKY 帮你把 Viewer 变成 Customer。"
@@ -113,61 +15,28 @@ const defaultContent: SiteContent = {const defaultContent: SiteContent = {
   cases: [
     {
       id: '1',
-      name: "名将美食馆 Ming Jiong",
-      result: "Sales 翻倍 120%",
-      desc: "主打炭烧烧腊。之前亏到想哭，我帮他重新讲 Brand Story，直接打中吃货的心。3个月直接反亏为盈，烧肉都不够卖！",
-      image: "https://placehold.co/600x400/FFD700/d60000?text=Ming+Jiong+%E5%90%8D%E5%B0%87&font=roboto"
+      name: "Alex (名将美食馆)",
+      result: "12点烧肉就卖完",
+      desc: "以前店里静到拍苍蝇，找不到吃。Jentzen 帮我搞了那个 Brand Story 还有拍美美的烧肉照，现在 everyday 12点 烧肉就卖完 liao！生意好到我想哭，真的很 Keng！",
+      image: "" // Empty image triggers default User Icon
     },
     {
       id: '2',
-      name: "Summer Cafe 夏日冰室",
-      result: "Booking 电话响不停",
-      desc: "定位重新调整，专门 Target 年轻人。Ads 一跑，Reservation 满到 Kitchen 做不及，老板笑着说'太忙了'。",
-      image: "https://picsum.photos/400/300?random=3"
+      name: "Tommy Wong (Summer Cafe)",
+      result: "厨房佬 Complain 做不及",
+      desc: "之前都是安哥安娣来，Jentzen 把那个菠萝包和奶茶拍到几诱人一下，现在全是年轻人排队打卡！厨房佬都 Complain 做不及，但我数钱数到爽啦！",
+      image: "" // Empty image triggers default User Icon
     },
     {
       id: '3',
-      name: "星喜咖喱面家",
-      result: "排队排到路边",
-      desc: "用'好食光' KOC 去探店，Video 一出，周末直接爆场。老板忙到没有时间吃饭，还要请人帮忙数钱！",
-      image: "https://picsum.photos/400/300?random=2"
+      name: "Hou (星喜咖喱面)",
+      result: "排队排到大马路",
+      desc: "那个 Video 一出，哇不得了！Weekend 排队排到大马路，连 KL 的人都特地跑来吃。我的咖喱面卖到锅底都空去。这个 Marketing 钱花得最值得！",
+      image: "" // Empty image triggers default User Icon
     }
   ],
-  partners: [
-    { id: '1', name: "Ah Muk Cha Chaan Teng" },
-    { id: '2', name: "Back Alley Group" },
-    { id: '3', name: "Mr. Wu" },
-    { id: '4', name: "Fenix Restaurant" },
-    { id: '5', name: "Ming Jiong" },
-    { id: '6', name: "De' massak" },
-    { id: '7', name: "Issen Hin Ramen" },
-    { id: '8', name: "Hao Yi Tea House" },
-    { id: '9', name: "Ni Kizoku" },
-    { id: '10', name: "Zok Noodle House" },
-  ],
-  portfolio: [
-    { 
-      id: '1', 
-      type: 'image', 
-      url: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&q=80&w=800', 
-      title: 'F&B Menu Design', 
-      category: 'Graphic' 
-    },
-    { 
-      id: '2', 
-      type: 'image', 
-      url: 'https://images.unsplash.com/photo-1511690656952-34342d2c28f5?auto=format&fit=crop&q=80&w=800', 
-      title: 'CNY Campaign Poster', 
-      category: 'Graphic' 
-    },
-    { 
-      id: '3', 
-      type: 'image', 
-      url: 'https://images.unsplash.com/photo-1550963393-27d967469a4c?auto=format&fit=crop&q=80&w=800', 
-      title: 'Restaurant Opening', 
-      category: 'Graphic' 
-    }
-  ]
+  partners: [], // Partners are now handled via the PDF Link in Testimonials component
+  portfolio: [] // Portfolio now uses hardcoded links in component, but we keep the type structure valid
 };
 
 interface ContentContextType {
@@ -261,8 +130,8 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
       updatePartner, 
       addPartner, 
       removePartner, 
-      addPortfolioItem,
-      removePortfolioItem,
+      addPortfolioItem, 
+      removePortfolioItem, 
       resetContent 
     }}>
       {children}

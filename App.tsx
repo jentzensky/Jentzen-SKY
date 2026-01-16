@@ -2,8 +2,10 @@ import React from 'react';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { PainPoints } from './components/PainPoints';
+import { MarketingQuiz } from './components/MarketingQuiz';
 import { ChefTheory } from './components/ChefTheory';
 import { Services } from './components/Services';
+import { ROICalculator } from './components/ROICalculator';
 import { Portfolio } from './components/Portfolio';
 import { Testimonials } from './components/Testimonials';
 import { Workflow } from './components/Workflow';
@@ -24,8 +26,16 @@ function App() {
         <main>
           <Hero />
           <PainPoints />
+          {/* New Interactive Section 1: Engage with a quiz */}
+          <MarketingQuiz />
+          
           <ChefTheory />
+          
           <Services />
+          
+          {/* New Interactive Section 2: Show value with numbers */}
+          <ROICalculator />
+          
           <Portfolio />
           <Testimonials />
           <Workflow />
