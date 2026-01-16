@@ -12,7 +12,17 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
 
-    <!-- Confetti for Quiz -->
+    <!-- React & ReactDOM (UMD for simple single file usage) -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    
+    <!-- Babel for JSX transformation in browser -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!-- Lucide Icons (Global) -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- Confetti -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
     <!-- Tailwind Config -->
@@ -141,6 +151,998 @@
 </head>
 <body class="bg-cyberDark min-h-screen text-white font-sans selection:bg-brandOrange selection:text-white">
     <div id="root"></div>
-    <script type="module" src="/index.tsx"></script>
+
+    <script type="text/babel">
+        // --- Setup & Utilities ---
+        const { useState, useEffect, createContext, useContext } = React;
+        
+        // Lucide Icons are available globally via the 'lucide' object
+        // We destructure them for easier usage in components
+        const { 
+            Menu, X, ChefHat, ArrowRight, Flame, TrendingDown, UserX, Ghost, 
+            MessageCircle, Utensils, Users, Store, ExternalLink, LayoutDashboard, 
+            Video, Rocket, Megaphone, CheckCircle2, Star, TrendingUp, Building2, 
+            FileText, Quote, User, Send, CheckCircle, AlertCircle, Facebook, 
+            Instagram, Settings, Image: ImageIcon, Type, Search, Lock, Share2, 
+            Upload, Trash2, Plus, RotateCcw, Download, Copy, Check, PlayCircle, 
+            Sparkles, FolderOpen, Calculator, Target, Info, RefreshCcw, AlertTriangle 
+        } = lucide;
+
+        // Ensure icons are rendered after mount/updates (Lucide global script requirement)
+        const useLucide = () => {
+            useEffect(() => {
+                if (window.lucide) window.lucide.createIcons();
+            });
+        };
+
+        // --- Data & Types (Simulated) ---
+        // Replacing TS Interfaces with standard JS Objects/defaults
+
+        const defaultContent = {
+            seo: {
+                title: "Jentzen SKY | 帮你 'Goreng' 出好业绩的 Marketing 大厨",
+                description: "做 Marketing 不只要 Volume，最重要是有 Sales！8年实战经验，Jentzen SKY 帮你把 Viewer 变成 Customer。"
+            },
+            hero: {
+                title: "Marketing 就像炒菜",
+                subtitle: "火候不对，再好的料都浪费！",
+                description: "老板，别再烧钱做无效广告了！引流是 Amplifier，产品是 Core。我有 8 年实战经验，不讲 Theory，只讲 Result。不管是 F&B 还是 Service Line，我都懂怎样帮你找客源，让你的生意 Huat 啊！"
+            },
+            cases: [
+                {
+                    id: '1',
+                    name: "Alex (名将美食馆)",
+                    result: "12点烧肉就卖完",
+                    desc: "以前店里静到拍苍蝇，找不到吃。Jentzen 帮我搞了那个 Brand Story 还有拍美美的烧肉照，现在 everyday 12点 烧肉就卖完 liao！生意好到我想哭，真的很 Keng！",
+                    image: "" // Empty triggers User Icon
+                },
+                {
+                    id: '2',
+                    name: "Tommy Wong (Summer Cafe)",
+                    result: "厨房佬 Complain 做不及",
+                    desc: "之前都是安哥安娣来，Jentzen 把那个菠萝包和奶茶拍到几诱人一下，现在全是年轻人排队打卡！厨房佬都 Complain 做不及，但我数钱数到爽啦！",
+                    image: "" // Empty triggers User Icon
+                },
+                {
+                    id: '3',
+                    name: "Hou (星喜咖喱面)",
+                    result: "排队排到大马路",
+                    desc: "那个 Video 一出，哇不得了！Weekend 排队排到大马路，连 KL 的人都特地跑来吃。我的咖喱面卖到锅底都空去。这个 Marketing 钱花得最值得！",
+                    image: "" // Empty triggers User Icon
+                }
+            ],
+            partners: [],
+            portfolio: []
+        };
+
+        const ServiceType = {
+            STRATEGY: '全案 Marketing Strategy (包到完)',
+            CONTENT: 'Content Creation (拍照/拍片/写文案)',
+            ADS: 'Ads 广告投放 (FB/IG/TikTok)',
+            KOC: 'KOC / 好食光 Viral 推广',
+            OTHER: '其他吹水/合作咨询'
+        };
+
+        // --- Context ---
+        const ContentContext = createContext();
+
+        const ContentProvider = ({ children }) => {
+            const [content, setContent] = useState(() => {
+                const saved = localStorage.getItem('site_content');
+                return saved ? JSON.parse(saved) : defaultContent;
+            });
+
+            useEffect(() => {
+                localStorage.setItem('site_content', JSON.stringify(content));
+                if (window.lucide) window.lucide.createIcons(); // Refresh icons on content change
+            }, [content]);
+
+            const updateSEO = (seo) => setContent(prev => ({ ...prev, seo }));
+            const updateHero = (hero) => setContent(prev => ({ ...prev, hero }));
+            const updateCase = (id, field, value) => {
+                setContent(prev => ({
+                    ...prev,
+                    cases: prev.cases.map(c => c.id === id ? { ...c, [field]: value } : c)
+                }));
+            };
+            const updatePartner = (id, field, value) => {
+                setContent(prev => ({
+                    ...prev,
+                    partners: prev.partners.map(p => p.id === id ? { ...p, [field]: value } : p)
+                }));
+            };
+            const addPartner = (name, logo) => {
+                const newPartner = { id: Date.now().toString(), name, logo };
+                setContent(prev => ({ ...prev, partners: [newPartner, ...prev.partners] }));
+            };
+            const removePartner = (id) => {
+                setContent(prev => ({ ...prev, partners: prev.partners.filter(p => p.id !== id) }));
+            };
+            const addPortfolioItem = (item) => {
+                setContent(prev => ({ ...prev, portfolio: [item, ...prev.portfolio || []] }));
+            };
+            const removePortfolioItem = (id) => {
+                setContent(prev => ({ ...prev, portfolio: prev.portfolio?.filter(p => p.id !== id) || [] }));
+            };
+            const resetContent = () => {
+                if (confirm("确定要重置所有内容吗？你的 Setting 会不见掉哦。")) {
+                    setContent(defaultContent);
+                }
+            };
+
+            return (
+                <ContentContext.Provider value={{ 
+                    content, updateSEO, updateHero, updateCase, updatePartner, 
+                    addPartner, removePartner, addPortfolioItem, removePortfolioItem, resetContent 
+                }}>
+                    {children}
+                </ContentContext.Provider>
+            );
+        };
+
+        const useContent = () => {
+            const context = useContext(ContentContext);
+            if (!context) throw new Error('useContent must be used within ContentProvider');
+            return context;
+        };
+
+        // --- Components ---
+
+        const Navbar = () => {
+            const [isScrolled, setIsScrolled] = useState(false);
+            const [isOpen, setIsOpen] = useState(false);
+            useLucide();
+
+            useEffect(() => {
+                const handleScroll = () => setIsScrolled(window.scrollY > 20);
+                window.addEventListener('scroll', handleScroll);
+                return () => window.removeEventListener('scroll', handleScroll);
+            }, []);
+
+            const scrollToSection = (id) => {
+                setIsOpen(false);
+                const element = document.getElementById(id);
+                if (element) element.scrollIntoView({ behavior: 'smooth' });
+            };
+
+            return (
+                <nav className={`fixed w-full z-50 transition-all duration-300 ${isScrolled ? 'bg-cyberDark/95 backdrop-blur-md border-b border-white/10 shadow-lg' : 'bg-transparent'}`}>
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div className="flex items-center justify-between h-20">
+                            <div className="flex-shrink-0 flex items-center gap-2 cursor-pointer" onClick={() => scrollToSection('hero')}>
+                                <div className="w-10 h-10 bg-gradient-to-tr from-brandOrange to-brandYellow rounded-full flex items-center justify-center shadow-glow-orange">
+                                    <ChefHat className="text-black w-6 h-6" />
+                                </div>
+                                <span className="font-black text-2xl tracking-tighter text-white">
+                                    JENTZEN <span className="text-brandOrange">SKY</span>
+                                </span>
+                            </div>
+                            
+                            <div className="hidden md:block">
+                                <div className="ml-10 flex items-baseline space-x-6">
+                                    <button onClick={() => scrollToSection('pain-points')} className="hover:text-brandOrange transition-colors px-3 py-2 rounded-md text-sm font-bold">做老板的痛</button>
+                                    <button onClick={() => scrollToSection('usp')} className="hover:text-brandOrange transition-colors px-3 py-2 rounded-md text-sm font-bold">我的招数</button>
+                                    <button onClick={() => scrollToSection('services')} className="hover:text-brandOrange transition-colors px-3 py-2 rounded-md text-sm font-bold">Service Menu</button>
+                                    <button onClick={() => scrollToSection('portfolio')} className="hover:text-brandYellow text-brandYellow transition-colors px-3 py-2 rounded-md text-sm font-bold border border-brandYellow/30">看作品 🔥</button>
+                                    <button onClick={() => scrollToSection('success')} className="hover:text-brandOrange transition-colors px-3 py-2 rounded-md text-sm font-bold">战绩 Wall</button>
+                                    <button onClick={() => scrollToSection('contact')} className="bg-brandOrange text-white hover:bg-white hover:text-brandOrange transition-all px-6 py-2 rounded-full font-black text-sm shadow-glow-orange uppercase ml-2">PM 聊聊</button>
+                                </div>
+                            </div>
+                            
+                            <div className="-mr-2 flex md:hidden">
+                                <button onClick={() => setIsOpen(!isOpen)} className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-white/10 focus:outline-none">
+                                    {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    {isOpen && (
+                        <div className="md:hidden bg-cyberGray border-b border-white/10 absolute w-full left-0 top-20">
+                            <div className="px-4 pt-4 pb-6 space-y-2">
+                                <button onClick={() => scrollToSection('pain-points')} className="text-gray-300 hover:text-brandOrange block px-3 py-3 rounded-md text-base font-bold w-full text-left border-b border-white/5">做老板的痛</button>
+                                <button onClick={() => scrollToSection('usp')} className="text-gray-300 hover:text-brandOrange block px-3 py-3 rounded-md text-base font-bold w-full text-left border-b border-white/5">我的招数</button>
+                                <button onClick={() => scrollToSection('services')} className="text-gray-300 hover:text-brandOrange block px-3 py-3 rounded-md text-base font-bold w-full text-left border-b border-white/5">Service Menu</button>
+                                <button onClick={() => scrollToSection('portfolio')} className="text-brandYellow hover:text-white block px-3 py-3 rounded-md text-base font-bold w-full text-left border-b border-white/5">看作品 (Works) 🔥</button>
+                                <button onClick={() => scrollToSection('success')} className="text-gray-300 hover:text-brandOrange block px-3 py-3 rounded-md text-base font-bold w-full text-left border-b border-white/5">战绩 Wall</button>
+                                <button onClick={() => scrollToSection('contact')} className="text-white bg-brandOrange hover:bg-brandOrange/90 block px-3 py-3 rounded-md text-base font-black w-full text-center mt-6 shadow-glow-orange">PM 聊聊</button>
+                            </div>
+                        </div>
+                    )}
+                </nav>
+            );
+        };
+
+        const Hero = () => {
+            const { content } = useContent();
+            const { title, subtitle, description } = content.hero;
+            useLucide();
+
+            return (
+                <section id="hero" className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
+                    <div className="absolute top-0 left-0 w-full h-full bg-[url('https://picsum.photos/1920/1080?grayscale&blur=2')] bg-cover bg-center opacity-30"></div>
+                    <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-black/70 via-black/80 to-cyberDark"></div>
+                    
+                    <div className="absolute top-1/4 left-10 text-4xl opacity-20 animate-float pointer-events-none select-none">🍔</div>
+                    <div className="absolute bottom-1/4 right-10 text-4xl opacity-20 animate-float-delayed pointer-events-none select-none">📈</div>
+                    <div className="absolute top-1/3 right-1/4 text-5xl opacity-10 animate-float pointer-events-none select-none">🔥</div>
+                    <div className="absolute bottom-1/3 left-1/4 text-4xl opacity-10 animate-float-delayed pointer-events-none select-none">💰</div>
+
+                    <div className="absolute top-20 right-0 w-96 h-96 bg-brandOrange/20 rounded-full blur-[100px] animate-pulse"></div>
+                    <div className="absolute bottom-0 left-0 w-80 h-80 bg-brandYellow/10 rounded-full blur-[100px]"></div>
+
+                    <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center text-center">
+                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-brandOrange/50 bg-brandOrange/10 backdrop-blur-sm mb-8 animate-bounce-slow hover:bg-brandOrange/20 transition-colors cursor-default">
+                            <Flame className="w-5 h-5 text-brandOrange animate-pulse" />
+                            <span className="text-brandOrange font-bold tracking-wide text-sm uppercase">8年实战经验 • No Bullshit</span>
+                        </div>
+                        
+                        <h1 className="text-5xl md:text-7xl font-black text-white mb-6 leading-tight tracking-tight">
+                            {title}<br />
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-brandOrange to-brandYellow drop-shadow-sm relative inline-block">
+                                {subtitle}
+                                <span className="absolute -top-4 -right-6 text-2xl text-white animate-pulse">✨</span>
+                            </span>
+                            <span className="relative block mt-2 text-white/90">
+                                <svg className="absolute w-2/3 left-1/2 -translate-x-1/2 h-4 -bottom-2 text-brandOrange opacity-80" viewBox="0 0 100 10" preserveAspectRatio="none">
+                                    <path d="M0 5 Q 50 15 100 5" stroke="currentColor" strokeWidth="4" fill="none" className="animate-pulse"/>
+                                </svg>
+                            </span>
+                        </h1>
+
+                        <p className="mt-8 text-xl text-gray-300 max-w-3xl leading-relaxed whitespace-pre-line font-medium backdrop-blur-sm bg-black/10 p-4 rounded-xl">
+                            {description}
+                        </p>
+
+                        <div className="mt-12 flex flex-col sm:flex-row gap-4 w-full sm:w-auto z-20">
+                            <button onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })} className="group relative px-8 py-4 bg-gradient-to-r from-brandOrange to-red-600 text-white font-black text-lg rounded-xl overflow-hidden shadow-glow-orange hover:scale-105 transition-all duration-300 active:scale-95">
+                                <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 skew-y-12"></div>
+                                <span className="relative z-10 flex items-center justify-center gap-2">
+                                    来，帮忙“点火” 🔥 <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
+                                </span>
+                            </button>
+                            
+                            <button onClick={() => document.getElementById('success')?.scrollIntoView({ behavior: 'smooth' })} className="px-8 py-4 bg-white/5 border border-white/20 text-white font-bold text-lg rounded-xl hover:bg-white/10 hover:border-brandOrange/50 transition-all flex items-center justify-center gap-2 active:scale-95">
+                                看我的战绩 (Result)
+                            </button>
+                        </div>
+                    </div>
+                </section>
+            );
+        };
+
+        const PainPoints = () => {
+            useLucide();
+            const pains = [
+                {
+                    icon: <TrendingDown className="w-12 h-12 text-red-500" />,
+                    title: "做 F&B 的",
+                    desc: "食物明明很好吃，但店里静过图书馆？只能靠 Discount 来吸引那些“吃了就跑”的顾客？",
+                    bg: "bg-red-500/5 hover:border-red-500/50 hover:bg-red-500/10"
+                },
+                {
+                    icon: <Ghost className="w-12 h-12 text-gray-400" />,
+                    title: "做 Service / 装修的",
+                    desc: "Facebook Page开了几年，PM 只有小猫两三只？Leads 也是那种问爽不要买的？",
+                    bg: "bg-gray-500/5 hover:border-gray-400/50 hover:bg-gray-500/10"
+                },
+                {
+                    icon: <UserX className="w-12 h-12 text-brandOrange" />,
+                    title: "做 Brand 的",
+                    desc: "产品很好，但没有人懂？投了 Ads 也是把钱丢进大海，ROI 惨不忍睹？",
+                    bg: "bg-orange-500/5 hover:border-brandOrange/50 hover:bg-brandOrange/10"
+                }
+            ];
+
+            return (
+                <section id="pain-points" className="py-24 bg-cyberGray relative border-t border-white/5">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div className="text-center mb-16">
+                            <h2 className="text-3xl md:text-4xl font-black text-white mb-4">
+                                你的生意是不是也遇到<br/><span className="text-brandOrange">这些“头痛”的问题</span>？
+                            </h2>
+                            <div className="h-1.5 w-24 bg-brandOrange mx-auto rounded-full"></div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+                            {pains.map((pain, index) => (
+                                <div key={index} className={`group p-8 rounded-2xl border border-white/10 transition-all duration-300 hover:shadow-2xl hover:animate-shake cursor-default ${pain.bg}`}>
+                                    <div className="mb-6 p-4 rounded-full bg-black/40 w-fit group-hover:scale-110 transition-transform duration-300 border border-white/5 shadow-lg relative overflow-hidden">
+                                        {pain.icon}
+                                        <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity rounded-full"></div>
+                                    </div>
+                                    <h3 className="text-2xl font-bold text-white mb-4 group-hover:text-red-400 transition-colors">{pain.title}</h3>
+                                    <p className="text-gray-400 leading-relaxed font-medium group-hover:text-gray-300">
+                                        {pain.desc}
+                                    </p>
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="flex justify-center">
+                            <a href="https://wa.me/60126539881?text=Hi%20Jentzen,%20sakit%20kepala%20la%20my%20marketing." target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 bg-[#25D366] text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-[#128C7E] shadow-lg hover:-translate-y-1 transition-all group">
+                                <MessageCircle className="w-6 h-6 group-hover:animate-bounce" />
+                                解决你的 Sakit Kepala: 012-653 9881
+                            </a>
+                        </div>
+                    </div>
+                </section>
+            );
+        };
+
+        const MarketingQuiz = () => {
+            const [step, setStep] = useState(0);
+            const [score, setScore] = useState(0);
+            useLucide();
+
+            const questions = [
+                {
+                    q: "你的 Facebook Page 多久 Update 一次？",
+                    options: [
+                        { text: "想到才 Post (一两个月一次)", points: 0 },
+                        { text: "一星期 1-2 次 (还有呼吸)", points: 5 },
+                        { text: "天天 Post (很勤劳)", points: 10 }
+                    ]
+                },
+                {
+                    q: "你的 Video 内容通常是什么？",
+                    options: [
+                        { text: "没有拍 Video，只放照片", points: 0 },
+                        { text: "拍美美的环境/食物 Close up", points: 5 },
+                        { text: "有故事、有真人出镜讲解", points: 10 }
+                    ]
+                },
+                {
+                    q: "现在有在投广告 (Ads) 吗？",
+                    options: [
+                        { text: "没有，靠缘分 (Organic)", points: 0 },
+                        { text: "有 Boost Post，但不懂怎样看 Data", points: 5 },
+                        { text: "有专门的 Funnel 和 Target Audience", points: 10 }
+                    ]
+                }
+            ];
+
+            const handleAnswer = (points) => {
+                const newScore = score + points;
+                setScore(newScore);
+                
+                if (step < questions.length - 1) {
+                    setStep(step + 1);
+                } else {
+                    setStep(questions.length);
+                    if (window.confetti) {
+                        window.confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+                    }
+                }
+            };
+
+            const resetQuiz = () => {
+                setStep(0);
+                setScore(0);
+            };
+
+            const getResult = () => {
+                if (score < 10) return { title: "白开水 (Tawar) 😱", desc: "老板，你的 Marketing 味道太淡了！难怪顾客记不住你。你需要立刻加料！", color: "text-gray-400", icon: <AlertTriangle className="w-12 h-12 text-gray-400 mb-4" /> };
+                if (score < 25) return { title: "家常菜 (Normal) 🤔", desc: "还可以，但是不够‘Wok Hei’。在这个竞争激烈的市场，你很难突围而出。", color: "text-brandYellow", icon: <ChefHat className="w-12 h-12 text-brandYellow mb-4" /> };
+                return { title: "麻辣火锅 (Pedas!) 🔥", desc: "不错哦！你的 Marketing 很有火候。但如果你想把生意再 Scale up，我们需要更高阶的 Strategy！", color: "text-brandOrange", icon: <CheckCircle2 className="w-12 h-12 text-brandOrange mb-4" /> };
+            };
+
+            return (
+                <section className="py-24 bg-cyberGray border-t border-white/5">
+                    <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div className="text-center mb-10">
+                            <h2 className="text-3xl font-black text-white mb-4">Marketing <span className="text-brandOrange">味蕾测试</span> (Taste Test)</h2>
+                            <p className="text-gray-400">只需 30 秒，帮你 Check 你的 Marketing 够不够味！</p>
+                        </div>
+
+                        <div className="bg-black/50 border border-white/10 rounded-2xl p-8 min-h-[300px] flex flex-col justify-center items-center relative shadow-[0_0_30px_rgba(0,0,0,0.5)]">
+                            {step < questions.length && (
+                                <div className="absolute top-0 left-0 w-full h-1 bg-gray-800 rounded-t-2xl overflow-hidden">
+                                    <div className="h-full bg-brandOrange transition-all duration-300" style={{ width: `${((step + 1) / questions.length) * 100}%` }}></div>
+                                </div>
+                            )}
+
+                            {step < questions.length ? (
+                                <div className="w-full animate-fade-in">
+                                    <h3 className="text-xl md:text-2xl font-bold text-white mb-8 text-center">{step + 1}. {questions[step].q}</h3>
+                                    <div className="grid gap-4">
+                                        {questions[step].options.map((opt, idx) => (
+                                            <button key={idx} onClick={() => handleAnswer(opt.points)} className="w-full text-left p-4 rounded-xl border border-white/10 hover:border-brandOrange hover:bg-brandOrange/10 transition-all font-medium text-gray-300 hover:text-white">
+                                                {opt.text}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="text-center animate-shake w-full">
+                                    {getResult().icon}
+                                    <h3 className="text-gray-400 text-sm font-bold uppercase tracking-widest mb-2">测试结果 Result</h3>
+                                    <h2 className={`text-4xl font-black mb-4 ${getResult().color}`}>{getResult().title}</h2>
+                                    <p className="text-white text-lg mb-8 max-w-lg mx-auto leading-relaxed">{getResult().desc}</p>
+                                    <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                                        <a href={`https://wa.me/60126539881?text=Hi%20Jentzen,%20my%20marketing%20score%20is%20${score}/30%20(${getResult().title}).%20Can%20you%20help?`} target="_blank" rel="noopener noreferrer" className="px-8 py-3 bg-brandOrange text-white font-bold rounded-full hover:bg-white hover:text-brandOrange transition-all shadow-glow-orange">找大厨“加料” 🔥</a>
+                                        <button onClick={resetQuiz} className="px-8 py-3 border border-white/20 text-gray-400 font-bold rounded-full hover:bg-white/10 hover:text-white transition-all flex items-center justify-center gap-2">
+                                            <RefreshCcw size={16} /> 再测一次
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </section>
+            );
+        };
+
+        const ChefTheory = () => {
+            useLucide();
+            const platforms = [
+                { name: '小红书 (XHS)', url: 'https://xhslink.com/m/6k9EGpFFLTW' },
+                { name: 'Facebook', url: 'https://www.facebook.com/Fun4life.my' },
+                { name: '抖音 (Douyin)', url: 'https://v.douyin.com/S4WH5uB/' },
+                { name: 'Instagram', url: 'https://www.instagram.com/fun4life.my?igsh=MXNweWN1ZnhhZ3pieA==' },
+                { name: 'TikTok', url: 'https://www.tiktok.com/@fun4life.my' }
+            ];
+
+            return (
+                <section id="usp" className="py-24 bg-black relative overflow-hidden">
+                    <div className="absolute right-0 top-1/4 w-1/2 h-1/2 bg-brandOrange/5 rounded-full blur-[120px]"></div>
+
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center mb-24">
+                            <div>
+                                <div className="inline-flex items-center gap-2 px-4 py-1 rounded-full border border-brandYellow text-brandYellow font-bold text-sm mb-6 bg-brandYellow/10">
+                                    <ChefHat size={16}/> UNIQUE SELLING POINT
+                                </div>
+                                <h2 className="text-4xl md:text-5xl font-black text-white mb-6 leading-tight">
+                                    独家 <span className="text-brandOrange">“Cooking 理论”</span>
+                                </h2>
+                                <p className="text-xl text-gray-300 mb-8 leading-relaxed">
+                                    很多老板以为只要丢钱投 Ads，生意就会自动好。
+                                    <br/><br/>
+                                    <span className="text-brandYellow font-bold text-2xl">错！大错特错！</span>
+                                    <br/><br/>
+                                    引流只是 Amplifier（放大器）。你的产品是“食材”，我是“大厨”。
+                                    如果食材不新鲜，神仙也救不了你。但如果食材好，
+                                    <span className="text-brandOrange font-bold border-b border-brandOrange/50 pb-1">我会用我的火候（广告技术）和摆盘（Content Marketing），帮你炒出一盘让全城排队的爆款好菜！</span>
+                                </p>
+                                <div className="flex gap-4 mb-8">
+                                    <div className="flex items-center gap-2 text-white font-bold bg-white/10 px-4 py-2 rounded-lg"><Utensils className="text-brandOrange" /> 挖卖点</div>
+                                    <div className="flex items-center gap-2 text-white font-bold bg-white/10 px-4 py-2 rounded-lg"><Store className="text-brandOrange" /> 讲故事</div>
+                                </div>
+                                <a href="https://wa.me/60126539881?text=Hi%20Jentzen,%20I%20want%20to%20know%20more%20about%20your%20Chef%20Theory." target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 bg-[#25D366] text-white px-6 py-3 rounded-full font-bold hover:bg-[#128C7E] transition-colors">
+                                    <MessageCircle size={20} /> 马上咨询: 012-653 9881
+                                </a>
+                            </div>
+                            <div className="relative">
+                                <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=800&auto=format&fit=crop" alt="Digital Marketing Analytics Growth" className="rounded-3xl rotate-3 hover:rotate-0 transition-transform duration-500 border-2 border-brandOrange/30 shadow-glow-orange opacity-90" />
+                                <div className="absolute -bottom-6 -left-6 bg-cyberGray p-6 rounded-xl border border-white/10 shadow-xl">
+                                    <p className="text-brandYellow font-black text-4xl">120%</p>
+                                    <p className="text-gray-400 text-sm font-bold">平均业绩 Up</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="bg-gradient-to-br from-gray-900 to-black rounded-3xl p-8 md:p-12 border border-brandOrange/20 relative overflow-hidden shadow-2xl">
+                            <div className="absolute top-0 right-0 w-64 h-64 bg-brandOrange/10 rounded-full blur-[80px]"></div>
+                            <div className="relative z-10 text-center md:text-left grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                                <div>
+                                    <div className="mb-6 flex justify-center md:justify-start">
+                                        <div className="bg-white/10 p-4 rounded-xl border border-white/5 inline-block backdrop-blur-sm">
+                                            <span className="text-3xl font-black text-white flex items-center gap-2">
+                                                <span className="text-brandYellow">好</span><span className="text-white">食</span><span className="text-brandYellow">光</span>
+                                                <span className="text-sm bg-brandYellow text-black px-2 py-0.5 rounded ml-2 font-bold">FUN 4 LIFE</span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <h3 className="text-3xl font-bold text-white mb-4">“自带流量”的 Ecosystem</h3>
+                                    <p className="text-gray-400 mb-6 font-medium">我不只是帮你投广告，我直接把流量带给你！<br/>利用我旗下 <strong>"好食光"</strong> 平台的 KOC 资源，全网粉丝超过 63,000+。一站式分发到 5 大热门平台，让你的店瞬间变网红店。</p>
+                                    <div className="flex flex-wrap gap-3 justify-center md:justify-start mb-6">
+                                        {platforms.map((platform) => (
+                                            <a key={platform.name} href={platform.url} target="_blank" rel="noopener noreferrer" className="group flex items-center gap-1 px-4 py-2 bg-white/10 hover:bg-brandOrange border border-white/10 hover:border-brandOrange rounded-full text-sm text-gray-300 hover:text-white transition-all font-medium">
+                                                {platform.name} <ExternalLink size={12} className="opacity-0 group-hover:opacity-100 transition-opacity"/>
+                                            </a>
+                                        ))}
+                                    </div>
+                                    <div className="flex justify-center md:justify-start">
+                                        <a href="https://wa.me/60126539881?text=Hi%20Jentzen,%20I%20am%20interested%20in%20your%20Fun4Life%20ecosystem." target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-[#25D366] font-bold hover:text-white transition-colors border-b border-[#25D366] pb-1">
+                                            <MessageCircle size={16} /> 加入好食光: 012-653 9881
+                                        </a>
+                                    </div>
+                                </div>
+                                <div className="flex flex-col items-center justify-center border-l-0 md:border-l border-white/10 pl-0 md:pl-12">
+                                    <Users className="w-16 h-16 text-brandOrange mb-4" />
+                                    <div className="text-5xl font-black text-white mb-2">50K+</div>
+                                    <div className="text-brandOrange tracking-widest font-bold uppercase">Total Followers</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            );
+        };
+
+        const Services = () => {
+            useLucide();
+            const services = [
+                {
+                    icon: <LayoutDashboard className="w-8 h-8 text-brandOrange" />,
+                    title: "Social Media 全托管 (Management)",
+                    desc: "Facebook & Instagram 交给我们。不仅仅是 Post 爽，我们负责账号规划、回复 PM、还会做 Crisis Management。让你的 Page 看起来 Professional。",
+                    borderColor: "hover:border-brandOrange hover:shadow-[0_0_20px_rgba(255,102,0,0.2)]",
+                    features: []
+                },
+                {
+                    icon: <Video className="w-8 h-8 text-brandYellow" />,
+                    title: "拍摄与设计 (Shooting & Design)",
+                    desc: "专业 Team 上门拍摄。无论是 Reels 短视频、产品照、还是 Menu 设计，全部包办。用 Pattern 很多的画面来吸引顾客。",
+                    borderColor: "hover:border-brandYellow hover:shadow-[0_0_20px_rgba(255,204,0,0.2)]",
+                    features: []
+                },
+                {
+                    icon: <Rocket className="w-8 h-8 text-red-500" />,
+                    title: "广告投放 (Ads Performance)",
+                    desc: "Facebook & Instagram Ads 精准投放。拒绝盲目烧钱，每一分 Budget 都花在刀刃上。我们看 Data 讲话，不好我们就改到好。",
+                    borderColor: "hover:border-red-500 hover:shadow-[0_0_20px_rgba(239,68,68,0.2)]",
+                    features: []
+                },
+                {
+                    icon: <Megaphone className="w-8 h-8 text-green-500" />,
+                    title: "好食光推广配套 (Fun4Life)",
+                    desc: "最强引流爆款！结合 KOC + 5大平台，瞬间引爆 Traffic。",
+                    borderColor: "hover:border-green-500 hover:shadow-[0_0_20px_rgba(34,197,94,0.2)]",
+                    features: ["亲自到现场拍摄 🎬", "Video 拍摄 + 剪辑", "超强 Copywriting 文案", "设计吸睛 Cover Photo", "5平台 Viral Post", "Review 满意才 Post"]
+                }
+            ];
+
+            return (
+                <section id="services" className="py-24 bg-cyberGray">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div className="text-center mb-16">
+                            <h2 className="text-3xl md:text-4xl font-black text-white mb-4">Marketing 大厨的 <span className="text-brandOrange">Full Course Menu</span></h2>
+                            <p className="text-gray-400 max-w-2xl mx-auto font-medium">从 Account Management、拍摄剪辑、Design 到下 Ads，一站式搞定。<br/>我不做所谓的“小编”，我做的是帮你赚钱的“操盘手”。</p>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-16">
+                            {services.map((service, index) => (
+                                <div key={index} className={`glass bg-black/50 backdrop-blur-sm p-8 rounded-2xl border border-white/5 transition-all duration-300 group ${service.borderColor} flex flex-col hover:-translate-y-2`}>
+                                    <div className="flex items-start gap-4 mb-4">
+                                        <div className="p-3 bg-white/5 rounded-lg group-hover:scale-110 transition-transform duration-300">{service.icon}</div>
+                                        <div>
+                                            <h3 className="text-xl font-bold text-white mb-3 group-hover:text-brandOrange transition-colors">{service.title}</h3>
+                                            <p className="text-gray-400 text-sm leading-relaxed font-medium">{service.desc}</p>
+                                        </div>
+                                    </div>
+                                    {service.features.length > 0 && (
+                                        <div className="mt-auto pt-4 border-t border-white/5 pl-[4.5rem]">
+                                            <ul className="space-y-2">
+                                                {service.features.map((feature, fIdx) => (
+                                                    <li key={fIdx} className="text-sm text-gray-300 flex items-start gap-2">
+                                                        <CheckCircle2 className="w-4 h-4 text-brandYellow flex-shrink-0 mt-0.5" /> <span>{feature}</span>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                        <div className="flex justify-center">
+                            <a href="https://wa.me/60126539881?text=Hi%20Jentzen,%20I%20am%20interested%20in%20your%20Social%20Media%20Services." target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 bg-[#25D366] text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-[#128C7E] shadow-[0_0_20px_rgba(37,211,102,0.3)] hover:shadow-[0_0_30px_rgba(37,211,102,0.5)] transition-all transform hover:-translate-y-1 active:scale-95">
+                                <MessageCircle className="w-6 h-6" /> 定制你的 Marketing 方案: 012-653 9881
+                            </a>
+                        </div>
+                    </div>
+                </section>
+            );
+        };
+
+        const ROICalculator = () => {
+            const [totalBudget, setTotalBudget] = useState(2500);
+            useLucide();
+            const serviceFee = 1500;
+            const adSpend = totalBudget - serviceFee;
+            const estimatedViews = Math.floor(adSpend * 100); 
+            const estimatedLeads = Math.floor(adSpend * 0.05); 
+            const potentialReach = Math.floor(adSpend * 200); 
+            const formatNumber = (num) => new Intl.NumberFormat('en-US').format(num);
+
+            return (
+                <section className="py-20 bg-gradient-to-b from-black to-cyberGray border-y border-white/5 relative overflow-hidden">
+                    <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/diagmonds-light.png')] opacity-5 pointer-events-none"></div>
+                    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                        <div className="text-center mb-10">
+                            <div className="inline-flex items-center gap-2 px-4 py-1 rounded-full border border-green-500/50 bg-green-500/10 text-green-400 font-bold text-sm mb-4"><Calculator size={16} /> 业绩模拟器</div>
+                            <h2 className="text-3xl md:text-4xl font-black text-white mb-4">算一算，你的 <span className="text-brandOrange">Huat</span> 指数！</h2>
+                            <p className="text-gray-400">透明化收费，把每一分钱算清楚。<br/><span className="text-xs text-gray-500">*Service Fee RM 1,500 起，Ads Budget RM 1,000 起。</span></p>
+                        </div>
+
+                        <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-8 shadow-2xl">
+                            <div className="mb-8">
+                                <label className="flex justify-between items-end mb-4">
+                                    <span className="text-lg font-bold text-white">总预算 Total Budget (Monthly)</span>
+                                    <span className="text-3xl font-black text-brandOrange">RM {formatNumber(totalBudget)}</span>
+                                </label>
+                                <input type="range" min="2500" max="20000" step="100" value={totalBudget} onChange={(e) => setTotalBudget(Number(e.target.value))} className="w-full h-4 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-brandOrange" />
+                                <div className="flex justify-between text-xs text-gray-500 mt-2 font-mono"><span>RM 2,500 (Starter)</span><span>RM 20,000+ (Scale)</span></div>
+                            </div>
+
+                            <div className="bg-black/40 rounded-xl p-4 mb-8 border border-white/5 flex flex-col md:flex-row gap-4 justify-between items-center text-sm">
+                                <div className="flex items-center gap-2 text-gray-400"><Info size={16} className="text-brandYellow" /> <span>预算分配 Breakdown:</span></div>
+                                <div className="flex gap-4 w-full md:w-auto">
+                                    <div className="flex-1 bg-gray-800 rounded px-3 py-2 border-l-4 border-gray-500"><p className="text-[10px] text-gray-400 uppercase">Service Fee</p><p className="font-bold text-white">RM {formatNumber(serviceFee)}</p></div>
+                                    <div className="flex-1 bg-gray-800 rounded px-3 py-2 border-l-4 border-brandOrange"><p className="text-[10px] text-brandOrange uppercase font-bold">Ads Spend</p><p className="font-bold text-white">RM {formatNumber(adSpend)}</p></div>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                <div className="bg-black/40 p-6 rounded-2xl border border-white/5 text-center group hover:border-brandYellow/50 transition-all">
+                                    <div className="w-12 h-12 bg-brandYellow/10 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform"><Users className="text-brandYellow w-6 h-6" /></div>
+                                    <h3 className="text-gray-400 text-sm font-bold mb-1">潜在触达人数 (Reach)</h3>
+                                    <p className="text-2xl font-black text-white">{formatNumber(potentialReach)}+</p>
+                                </div>
+                                <div className="bg-black/40 p-6 rounded-2xl border border-white/5 text-center group hover:border-brandOrange/50 transition-all relative overflow-hidden">
+                                    <div className="absolute inset-0 bg-brandOrange/5 animate-pulse"></div>
+                                    <div className="w-12 h-12 bg-brandOrange/10 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform relative z-10"><Target className="text-brandOrange w-6 h-6" /></div>
+                                    <h3 className="text-gray-400 text-sm font-bold mb-1 relative z-10">预计曝光量 (Views)</h3>
+                                    <p className="text-2xl font-black text-white relative z-10">{formatNumber(estimatedViews)}+</p>
+                                </div>
+                                <div className="bg-black/40 p-6 rounded-2xl border border-white/5 text-center group hover:border-green-500/50 transition-all">
+                                    <div className="w-12 h-12 bg-green-500/10 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform"><TrendingUp className="text-green-500 w-6 h-6" /></div>
+                                    <h3 className="text-gray-400 text-sm font-bold mb-1">潜在询问 (Leads)</h3>
+                                    <p className="text-2xl font-black text-white">~{estimatedLeads}</p>
+                                </div>
+                            </div>
+                            <div className="mt-8 text-center">
+                                <a href={`https://wa.me/60126539881?text=Hi%20Jentzen,%20my%20total%20budget%20is%20RM${totalBudget}.%20Can%20we%20start?`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 bg-white text-black px-8 py-3 rounded-full font-black hover:bg-brandOrange hover:text-white transition-all shadow-lg hover:shadow-[0_0_20px_#FF6600]">
+                                    <Calculator size={18} /> 用 RM {formatNumber(totalBudget)} 启动计划
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            );
+        };
+
+        const Portfolio = () => {
+            useLucide();
+            return (
+                <section id="portfolio" className="py-24 bg-cyberGray relative overflow-hidden">
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10 pointer-events-none"></div>
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                        <div className="text-center mb-12">
+                            <div className="inline-block animate-bounce-slow"><Sparkles className="text-brandYellow w-8 h-8 mx-auto mb-2" /></div>
+                            <h2 className="text-3xl md:text-4xl font-black text-white mb-4">我的大厨 <span className="text-brandOrange">招牌菜</span> (Works)</h2>
+                            <p className="text-gray-400 font-medium max-w-2xl mx-auto">这里都是我亲自操刀的作品。点击下方文件夹，直接进入 Google Drive 查看高清原图和完整 Video。</p>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+                            <a href="https://drive.google.com/drive/folders/1DEwAKXOl2dNqxT6xDSg4WWIq90LmwbIv?usp=drive_link" target="_blank" rel="noopener noreferrer" className="group relative h-80 rounded-3xl overflow-hidden border border-white/10 hover:border-brandYellow/50 transition-all duration-500 hover:shadow-[0_0_30px_rgba(255,204,0,0.3)] hover:-translate-y-2">
+                                <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1626785774573-4b7993143a2d?q=80&w=1600&auto=format&fit=crop')] bg-cover bg-center transition-transform duration-700 group-hover:scale-110 grayscale group-hover:grayscale-0"></div>
+                                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent opacity-90 group-hover:opacity-80 transition-opacity"></div>
+                                <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-8">
+                                    <div className="w-16 h-16 bg-brandYellow/20 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform backdrop-blur-md border border-brandYellow/30"><ImageIcon className="w-8 h-8 text-brandYellow" /></div>
+                                    <h3 className="text-3xl font-black text-white mb-2">平面设计作品集</h3>
+                                    <p className="text-brandYellow font-bold tracking-widest text-sm uppercase mb-6">Graphic Design Portfolio</p>
+                                    <div className="inline-flex items-center gap-2 bg-white/10 hover:bg-brandYellow hover:text-black text-white px-6 py-3 rounded-full font-bold transition-all backdrop-blur-sm border border-white/20 group-hover:border-transparent"><FolderOpen size={18} /> 点击查看 (Google Drive) <ExternalLink size={14} /></div>
+                                </div>
+                            </a>
+                            <a href="https://drive.google.com/drive/folders/1WyJPJ2Hr6zQIyaeYwXA5uEGWAJ3QtWr7?usp=drive_link" target="_blank" rel="noopener noreferrer" className="group relative h-80 rounded-3xl overflow-hidden border border-white/10 hover:border-red-600/50 transition-all duration-500 hover:shadow-[0_0_30px_rgba(220,38,38,0.3)] hover:-translate-y-2">
+                                <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?q=80&w=1600&auto=format&fit=crop')] bg-cover bg-center transition-transform duration-700 group-hover:scale-110 grayscale group-hover:grayscale-0"></div>
+                                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent opacity-90 group-hover:opacity-80 transition-opacity"></div>
+                                <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-8">
+                                    <div className="w-16 h-16 bg-red-600/20 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform backdrop-blur-md border border-red-600/30"><PlayCircle className="w-8 h-8 text-red-500" /></div>
+                                    <h3 className="text-3xl font-black text-white mb-2">视频拍摄作品集</h3>
+                                    <p className="text-red-500 font-bold tracking-widest text-sm uppercase mb-6">Video Production Portfolio</p>
+                                    <div className="inline-flex items-center gap-2 bg-white/10 hover:bg-red-600 hover:text-white text-white px-6 py-3 rounded-full font-bold transition-all backdrop-blur-sm border border-white/20 group-hover:border-transparent"><FolderOpen size={18} /> 点击查看 (Google Drive) <ExternalLink size={14} /></div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </section>
+            );
+        };
+
+        const Testimonials = () => {
+            const { content } = useContent();
+            const { cases } = content;
+            useLucide();
+
+            return (
+                <section id="success" className="py-24 bg-black border-y border-white/5">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
+                            <div>
+                                <h2 className="text-3xl md:text-4xl font-black text-white mb-4">老板真心话 <span className="text-brandOrange">Real Feedback</span></h2>
+                                <p className="text-gray-400 font-medium">听听这些老板用了 Jentzen SKY 之后怎么说？</p>
+                            </div>
+                            <div className="hidden md:block">
+                                <span className="text-brandYellow font-mono text-sm border border-brandYellow px-2 py-1 rounded">Trust Score: 100%</span>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20">
+                            {cases.map((item) => (
+                                <div key={item.id} className="relative p-8 rounded-3xl bg-cyberGray border border-white/10 hover:border-brandOrange/50 transition-all duration-300 group hover:-translate-y-2 flex flex-col">
+                                    <Quote className="absolute top-6 right-6 text-white/5 w-20 h-20 rotate-12 group-hover:text-brandOrange/10 transition-colors" />
+                                    <div className="flex items-center gap-4 mb-6 relative z-10">
+                                        <div className="w-16 h-16 rounded-full border-2 border-brandOrange p-0.5 shadow-[0_0_15px_rgba(255,102,0,0.3)] bg-gray-900 flex items-center justify-center overflow-hidden">
+                                            {item.image ? (
+                                                <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                                            ) : (
+                                                <User className="w-9 h-9 text-gray-500" />
+                                            )}
+                                        </div>
+                                        <div>
+                                            <h3 className="text-lg font-bold text-white leading-tight">{item.name}</h3>
+                                            <div className="flex gap-1 mt-1 text-brandYellow">
+                                                <Star size={12} fill="currentColor" /><Star size={12} fill="currentColor" /><Star size={12} fill="currentColor" /><Star size={12} fill="currentColor" /><Star size={12} fill="currentColor" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="relative z-10 flex-1">
+                                        <p className="text-gray-300 italic leading-relaxed text-sm mb-6">"{item.desc}"</p>
+                                    </div>
+                                    <div className="relative z-10 pt-4 border-t border-white/10 mt-auto">
+                                        <div className="inline-flex items-center gap-2 text-brandOrange font-bold text-sm bg-brandOrange/10 px-3 py-1.5 rounded-lg">
+                                            <TrendingUp size={14} /> {item.result}
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="mb-16">
+                            <div className="text-center mb-8">
+                                <h3 className="text-xl font-bold text-white mb-2 flex items-center justify-center gap-2"><Building2 className="text-brandOrange" /> 更多合作商家 Trusted Partners</h3>
+                                <div className="h-1 w-12 bg-white/10 mx-auto rounded-full mb-6"></div>
+                                <p className="text-gray-400 max-w-2xl mx-auto">还有超过 50+ 间 F&B 和各行各业的老板选择相信我们。点击下方查看完整 List。</p>
+                            </div>
+                            <div className="flex justify-center">
+                                <a href="https://drive.google.com/file/d/1_0-6rkRwL0GwaCA3804FeO1M9jNxQXG5/view?usp=sharing" target="_blank" rel="noopener noreferrer" className="group relative flex items-center gap-4 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-brandOrange rounded-2xl p-6 transition-all duration-300 w-full max-w-2xl hover:-translate-y-1 hover:shadow-glow-orange">
+                                    <div className="bg-brandOrange/20 p-4 rounded-xl group-hover:bg-brandOrange group-hover:text-white transition-colors text-brandOrange"><FileText size={32} /></div>
+                                    <div className="flex-1 text-left">
+                                        <h4 className="text-lg font-bold text-white group-hover:text-brandOrange transition-colors">点击查看完整商家名单 (PDF)</h4>
+                                        <p className="text-sm text-gray-400 group-hover:text-gray-300">View Full Partners List - Google Drive</p>
+                                    </div>
+                                    <div className="bg-black/20 p-2 rounded-full text-gray-500 group-hover:text-white transition-colors"><ExternalLink size={20} /></div>
+                                </a>
+                            </div>
+                        </div>
+
+                        <div className="flex justify-center">
+                            <a href="https://wa.me/60126539881?text=Hi%20Jentzen,%20I%20saw%20your%20clients%20result,%20I%20want%20to%20know%20more." target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 bg-[#25D366] text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-[#128C7E] shadow-[0_0_20px_rgba(37,211,102,0.3)] hover:shadow-[0_0_30px_rgba(37,211,102,0.5)] transition-all transform hover:-translate-y-1">
+                                <MessageCircle className="w-6 h-6" /> 我也要爆单: 012-653 9881
+                            </a>
+                        </div>
+                    </div>
+                </section>
+            );
+        };
+
+        const Workflow = () => {
+            const steps = [
+                { num: "01", title: "初步咨询 (Consultation)", desc: "了解你的生意模式与 Sakkie 痛点" },
+                { num: "02", title: "需求评估 (Audit)", desc: "Check 你的 Brand，找出问题根源" },
+                { num: "03", title: "提案报价 (Quotation)", desc: "量身定制方案，Price 公道透明" },
+                { num: "04", title: "业绩起飞 (Huat Ah)", desc: "Execute 方案，优化 Data，坐等收钱" },
+            ];
+            return (
+                <section className="py-20 bg-cyberGray">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                            {steps.map((step, idx) => (
+                                <div key={idx} className="relative p-6 border-l-4 border-white/10 hover:border-brandOrange transition-colors bg-black/20 rounded-r-lg">
+                                    <span className="text-5xl font-black text-white/5 absolute top-2 right-4 font-sans italic">{step.num}</span>
+                                    <h3 className="text-lg font-black text-white mb-2">{step.title}</h3>
+                                    <p className="text-gray-400 text-sm font-medium">{step.desc}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </section>
+            );
+        };
+
+        const ContactForm = () => {
+            const [formData, setFormData] = useState({ name: '', company_name: '', social_media_handle: '', phone: '', service_type: ServiceType.STRATEGY, budget_range: '' });
+            const [status, setStatus] = useState('idle');
+            useLucide();
+
+            const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
+            const handleSubmit = async (e) => {
+                e.preventDefault();
+                setStatus('submitting');
+                const message = `你好 Jentzen，我想咨询 Marketing 服务：\n姓名: ${formData.name}\n公司: ${formData.company_name}\n电话: ${formData.phone}\n社交媒体: ${formData.social_media_handle}\n服务类型: ${formData.service_type}\n预算范围: ${formData.budget_range}`;
+                window.open(`https://wa.me/60126539881?text=${encodeURIComponent(message)}`, '_blank');
+                setStatus('success');
+                setFormData({ name: '', company_name: '', social_media_handle: '', phone: '', service_type: ServiceType.STRATEGY, budget_range: '' });
+            };
+
+            return (
+                <section id="contact" className="py-24 bg-black relative">
+                    <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-brandOrange to-brandYellow"></div>
+                    <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div className="bg-cyberGray/50 backdrop-blur-xl rounded-3xl p-8 md:p-12 border border-white/10 shadow-[0_0_50px_rgba(255,102,0,0.2)]">
+                            <div className="text-center mb-10">
+                                <h2 className="text-3xl font-black text-white mb-2">准备好让 Sales <span className="text-brandOrange">翻倍</span> 了吗？</h2>
+                                <p className="text-gray-400 font-medium">填这个 Form，会直接 Jump 去 WhatsApp 跟我讲话。<br/><span className="text-brandYellow text-sm font-bold">* Slots 有限，每个月只接 3 个 Full Package 客户</span></p>
+                            </div>
+                            {status === 'success' ? (
+                                <div className="text-center py-12">
+                                    <CheckCircle className="w-20 h-20 text-brandYellow mx-auto mb-6" />
+                                    <h3 className="text-2xl font-bold text-white mb-2">收到！正在 Jump 去 WhatsApp...</h3>
+                                    <button onClick={() => setStatus('idle')} className="mt-8 text-brandOrange hover:underline font-bold">Send 多一次</button>
+                                </div>
+                            ) : (
+                                <form onSubmit={handleSubmit} className="space-y-6">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div><label className="block text-sm font-bold text-gray-400 mb-2">你的名字 Name</label><input required type="text" name="name" value={formData.name} onChange={handleChange} className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-brandOrange font-medium" placeholder="Jentzen Sky" /></div>
+                                        <div><label className="block text-sm font-bold text-gray-400 mb-2">电话 Phone</label><input required type="tel" name="phone" value={formData.phone} onChange={handleChange} className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-brandOrange font-medium" placeholder="012-345 6789" /></div>
+                                    </div>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div><label className="block text-sm font-bold text-gray-400 mb-2">公司/品牌 Company</label><input required type="text" name="company_name" value={formData.company_name} onChange={handleChange} className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-brandOrange font-medium" placeholder="My Awesome Brand" /></div>
+                                        <div><label className="block text-sm font-bold text-gray-400 mb-2">Social Handle (FB/IG)</label><input type="text" name="social_media_handle" value={formData.social_media_handle} onChange={handleChange} className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-brandOrange font-medium" placeholder="@mybrand" /></div>
+                                    </div>
+                                    <div><label className="block text-sm font-bold text-gray-400 mb-2">你需要什么 Service?</label><select name="service_type" value={formData.service_type} onChange={handleChange} className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-brandOrange font-medium">{Object.values(ServiceType).map((svc) => (<option key={svc} value={svc} className="bg-black">{svc}</option>))}</select></div>
+                                    <div><label className="block text-sm font-bold text-gray-400 mb-2">Total Budget Range<span className="block text-xs text-brandOrange font-normal mt-1">*Service Fee RM 1,500 起</span></label><select name="budget_range" value={formData.budget_range} onChange={handleChange} className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-brandOrange font-medium"><option value="" disabled className="bg-black">请选择 Budget</option><option value="RM 2.5k - RM 5k" className="bg-black">RM 2,500 - RM 5,000</option><option value="RM 5k - RM 10k" className="bg-black">RM 5,000 - RM 10,000</option><option value="> RM 10k" className="bg-black">RM 10,000+</option></select></div>
+                                    <button type="submit" disabled={status === 'submitting'} className="w-full bg-gradient-to-r from-brandOrange to-brandYellow text-black font-black text-lg py-4 rounded-xl hover:shadow-[0_0_20px_#FF6600] transition-all flex items-center justify-center gap-2 uppercase">{status === 'submitting' ? 'Jumping...' : 'Send 去 WhatsApp'} <Send size={20} /></button>
+                                </form>
+                            )}
+                        </div>
+                    </div>
+                </section>
+            );
+        };
+
+        const Footer = () => {
+            useLucide();
+            return (
+                <footer className="bg-black py-12 border-t border-white/5">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-6">
+                        <div className="text-center md:text-left"><h3 className="text-2xl font-black text-white">JENTZEN <span className="text-neonBlue">SKY</span></h3><p className="text-gray-500 text-sm mt-2">© {new Date().getFullYear()} All Rights Reserved.</p></div>
+                        <div className="flex gap-6"><a href="#" className="text-gray-400 hover:text-neonBlue transition-colors"><Facebook /></a><a href="#" className="text-gray-400 hover:text-pink-500 transition-colors"><Instagram /></a><a href="#" className="text-gray-400 hover:text-white transition-colors"><Video /></a></div>
+                    </div>
+                </footer>
+            );
+        };
+
+        const AdminPanel = () => {
+            const [isOpen, setIsOpen] = useState(false);
+            const [isAuthenticated, setIsAuthenticated] = useState(false);
+            const [username, setUsername] = useState('');
+            const [password, setPassword] = useState('');
+            const [activeTab, setActiveTab] = useState('seo');
+            const { content, updateSEO, updateHero, updateCase, resetContent } = useContent();
+            useLucide();
+
+            const handleLogin = (e) => {
+                e.preventDefault();
+                if (username === 'jentzen' && password === 'admin888') setIsAuthenticated(true);
+            };
+
+            const handleFileUpload = (e, callback) => {
+                const file = e.target.files?.[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onloadend = () => callback(reader.result);
+                    reader.readAsDataURL(file);
+                }
+            };
+
+            if (!isOpen) return <button onClick={() => setIsOpen(true)} className="fixed top-24 right-4 z-50 bg-black/80 text-brandOrange p-3 rounded-full border border-brandOrange shadow-glow-orange hover:bg-black transition-all group"><Settings className="w-6 h-6 group-hover:rotate-90 transition-transform duration-500" /></button>;
+
+            if (!isAuthenticated) return (
+                <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 backdrop-blur-md">
+                    <div className="bg-cyberGray p-8 rounded-2xl border border-brandOrange/30 shadow-2xl w-full max-w-sm relative">
+                        <button onClick={() => setIsOpen(false)} className="absolute top-4 right-4 text-gray-400 hover:text-white"><X /></button>
+                        <h2 className="text-2xl font-black text-white text-center mb-6">Admin Login</h2>
+                        <form onSubmit={handleLogin} className="space-y-4">
+                            <input type="text" placeholder="ID (jentzen)" value={username} onChange={e => setUsername(e.target.value)} className="w-full bg-black border border-white/20 rounded p-3 text-white" />
+                            <input type="password" placeholder="Password (admin888)" value={password} onChange={e => setPassword(e.target.value)} className="w-full bg-black border border-white/20 rounded p-3 text-white" />
+                            <button type="submit" className="w-full bg-brandOrange text-white font-bold py-3 rounded-lg shadow-glow-orange">登入 Login</button>
+                        </form>
+                    </div>
+                </div>
+            );
+
+            return (
+                <div className="fixed inset-0 z-[60] flex justify-end">
+                    <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setIsOpen(false)}></div>
+                    <div className="relative w-full max-w-md bg-cyberGray border-l border-brandOrange/30 h-full overflow-y-auto shadow-2xl p-4 flex flex-col">
+                        <div className="flex justify-between items-center mb-6">
+                            <h2 className="text-xl font-bold text-white flex items-center gap-2"><Settings className="text-brandOrange" /> 管理 Panel</h2>
+                            <button onClick={() => setIsOpen(false)} className="text-gray-400 hover:text-white"><X /></button>
+                        </div>
+                        <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
+                             <button onClick={() => setActiveTab('seo')} className={`px-4 py-2 rounded-full text-sm font-bold ${activeTab === 'seo' ? 'bg-brandOrange text-white' : 'bg-black text-gray-400'}`}>SEO</button>
+                             <button onClick={() => setActiveTab('hero')} className={`px-4 py-2 rounded-full text-sm font-bold ${activeTab === 'hero' ? 'bg-brandOrange text-white' : 'bg-black text-gray-400'}`}>首页</button>
+                             <button onClick={() => setActiveTab('cases')} className={`px-4 py-2 rounded-full text-sm font-bold ${activeTab === 'cases' ? 'bg-brandOrange text-white' : 'bg-black text-gray-400'}`}>战绩</button>
+                        </div>
+                        <div className="flex-1 overflow-y-auto space-y-6">
+                            {activeTab === 'seo' && (
+                                <div className="space-y-4">
+                                    <div><label className="text-sm font-bold text-gray-300">Title</label><input type="text" value={content.seo.title} onChange={(e) => updateSEO({ ...content.seo, title: e.target.value })} className="w-full bg-black border border-white/20 rounded p-2 text-white" /></div>
+                                    <div><label className="text-sm font-bold text-gray-300">Description</label><textarea value={content.seo.description} onChange={(e) => updateSEO({ ...content.seo, description: e.target.value })} className="w-full bg-black border border-white/20 rounded p-2 text-white" /></div>
+                                </div>
+                            )}
+                            {activeTab === 'hero' && (
+                                <div className="space-y-4">
+                                    <div><label className="text-sm font-bold text-gray-300">Title</label><input type="text" value={content.hero.title} onChange={(e) => updateHero({ ...content.hero, title: e.target.value })} className="w-full bg-black border border-white/20 rounded p-2 text-white" /></div>
+                                    <div><label className="text-sm font-bold text-gray-300">Subtitle</label><input type="text" value={content.hero.subtitle} onChange={(e) => updateHero({ ...content.hero, subtitle: e.target.value })} className="w-full bg-black border border-white/20 rounded p-2 text-white" /></div>
+                                </div>
+                            )}
+                            {activeTab === 'cases' && (
+                                <div className="space-y-6">
+                                    {content.cases.map(c => (
+                                        <div key={c.id} className="border border-white/10 rounded-lg p-4 bg-black/20">
+                                            <h3 className="text-brandYellow font-bold mb-3">{c.name}</h3>
+                                            <input value={c.result} onChange={(e) => updateCase(c.id, 'result', e.target.value)} className="w-full bg-black border border-white/10 rounded p-2 text-sm text-white mb-2" />
+                                            <textarea value={c.desc} onChange={(e) => updateCase(c.id, 'desc', e.target.value)} className="w-full bg-black border border-white/10 rounded p-2 text-sm text-white mb-2" />
+                                            <div className="flex items-center gap-3">
+                                                 <img src={c.image || 'https://via.placeholder.com/50'} className="w-12 h-12 object-cover rounded" />
+                                                 <label className="cursor-pointer bg-white/10 text-white text-xs px-3 py-2 rounded flex items-center gap-2"><ImageIcon size={14} /> Upload Image<input type="file" className="hidden" accept="image/*" onChange={(e) => handleFileUpload(e, (url) => updateCase(c.id, 'image', url))} /></label>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                        <div className="mt-4 pt-4 border-t border-white/10">
+                            <button onClick={resetContent} className="w-full flex justify-center items-center gap-2 text-red-500 hover:text-red-400 text-xs py-2 font-bold bg-red-500/5 hover:bg-red-500/10 rounded"><RotateCcw size={12} /> Reset to Default</button>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const SEOManager = () => {
+            const { content } = useContent();
+            useEffect(() => {
+                document.title = content.seo.title;
+                let metaDescription = document.querySelector('meta[name="description"]');
+                if (!metaDescription) {
+                    metaDescription = document.createElement('meta');
+                    metaDescription.setAttribute('name', 'description');
+                    document.head.appendChild(metaDescription);
+                }
+                metaDescription.setAttribute('content', content.seo.description);
+            }, [content.seo]);
+            return null;
+        };
+
+        // --- Main App ---
+        const App = () => {
+            return (
+                <ContentProvider>
+                    <SEOManager />
+                    <div className="bg-cyberDark min-h-screen text-white font-sans selection:bg-brandOrange selection:text-white">
+                        <Navbar />
+                        <main>
+                            <Hero />
+                            <PainPoints />
+                            <MarketingQuiz />
+                            <ChefTheory />
+                            <Services />
+                            <ROICalculator />
+                            <Portfolio />
+                            <Testimonials />
+                            <Workflow />
+                            <ContactForm />
+                        </main>
+                        <Footer />
+                        <AdminPanel />
+                        <a href="https://wa.me/60126539881?text=Hello%20Jentzen%2C%20I%20am%20interested%20in%20your%20marketing%20services." target="_blank" rel="noopener noreferrer" className="fixed bottom-6 right-6 z-50 bg-[#25D366] text-white p-3 px-4 rounded-xl shadow-lg hover:shadow-[0_0_20px_#25D366] hover:-translate-y-1 transition-all animate-bounce flex flex-col items-center gap-1" aria-label="Contact on WhatsApp">
+                            <MessageCircle className="w-8 h-8" />
+                            <span className="text-[10px] font-bold uppercase tracking-wide">WhatsApp 联系我</span>
+                        </a>
+                    </div>
+                </ContentProvider>
+            );
+        };
+
+        // --- Mount ---
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+<script type="module" src="/index.tsx"></script>
 </body>
 </html>
